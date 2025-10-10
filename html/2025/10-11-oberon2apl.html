@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>O→A</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body>
+<h2>Превращение O→A</h2>
+<p>Убого:</p>
+<pre><code>MODULE Power;
+
+ PROCEDURE Do*(x: REAL; n: INTEGER): REAL;
+ VAR y: REAL; i: INTEGER;
+ BEGIN
+  ASSERT(n >= 0);
+
+  y := 1.0; i := n;
+  WHILE i > 0 DO
+    IF ODD(i) THEN y := y*x END;
+    x := x*x; i := i DIV 2
+  END
+ RETURN
+  y
+ END Do;
+
+END Power.</code></pre>
+
+<details><summary>Уже лучше:</summary>
+<pre><code>power ← f R N R { (x n) 
+  (y) ← 1.0
+  (↺) n > 0 {
+    n|2 = 1 ? y ×← x
+    x ×← x
+    n ÷← 2
+  }
+  y
+}</code></pre>
+
+
+<details><summary>Божественно:</summary>
+<pre><code>power ← {
+  ⍵=0 : 1
+  (1 ⍺)[1+2|⍵] × (⍺×⍺) ∇ ⌊⍵÷2
+}</code></pre></details>
+  
+  </details>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>O→L</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body>
+<h2>Превращение O→L</h2>
+<p>Убого:</p>
+<pre><code>MODULE Power;
+
+ PROCEDURE Do*(x: REAL; n: INTEGER): REAL;
+ VAR y: REAL; i: INTEGER;
+ BEGIN
+  ASSERT(n >= 0);
+
+  y := 1.0; i := n;
+  WHILE i > 0 DO
+    IF ODD(i) THEN y := y*x END;
+    x := x*x; i := i DIV 2
+  END
+ RETURN
+  y
+ END Do;
+
+END Power.
+</code></pre>
+
+<details><summary>Уже лучше:</summary>
+<pre><code>(module Power
+  (procedure Do ((x REAL) (n INTEGER)) REAL
+  (var ((y REAL) (i INTEGER)))
+  (
+    (assert (>= n 0))
+    (:= y 1.0)
+    (:= i n)
+    (while (> i 0) (
+      (if (odd i)
+          (:= y (* y x))
+      )
+      (:= x (* x x))
+      (:= i (div i 2))
+    ))
+    (return y)
+  ))
+)</code></pre>
+  
+  <details><summary>Божественно:</summary>
+<pre><code>(define (power x n)
+(begin
+  (when (&lt; n 0) (error "Negative exponent"))
+  (let ((y 1.0)
+        (i n))
+    (let loop ((x x) (i n) (y 1.0))
+      (if (> i 0)
+          (let* ((y (if (odd? i) (* y x) y))
+                 (x (* x x))
+                 (i (quotient i 2)))
+            (loop x i y))
+          y)))))
+</code></pre></details>
+    
+</details>
+
+</body>
+</html>
