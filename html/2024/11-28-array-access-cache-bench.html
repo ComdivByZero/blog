@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Замеры доступа</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body>
+<h2>Линейная память — это грубая имитация. Замеры</h2>
+
+<p>Попросил ChatGPT написать код замера скорости обхода большого массива в правильном и неправильном порядке. Он правильно распознал, что речь шла про обход по рядам-столбцам и столбцам-рядам, правильность и неправильность которых происходит из неравномерного доступа к оперативной памяти через систему кэшей. Запустив предложенный код, я решил добавить изменённый обход с допонительными перескоками для большего соответствия произвольному доступу.</p>
+
+<!--more-->
+
+<style>a.self::before { content: attr(href); } pre, code, .doc {background-color:#F8F9F8;color:#111;} pre {overflow:auto; padding:10px;}
+  p em {display:none}
+</style>
+<pre><code><details><summary></summary>#include &lt;stdio.h>
+#include &lt;stdlib.h>
+#include &lt;time.h>
+
+#if defined BIG
+#   define N 1
+#   define LEN 20000
+#   define JUMP 111
+#endif
+
+#if !defined N
+#   define N 40001
+#endif
+#if !defined LEN
+#   define LEN 200
+#endif
+#if !defined JUMP
+#   define JUMP 11
+#endif
+
+static unsigned csum;
+</details>
+static void fill_array(int array[LEN][LEN]) {
+  int i, j;
+
+  for (i = 0; i < LEN; i++) {
+    for (j = 0; j < LEN; j++) {
+      array[i][j] = rand() % 0x100;
+    }
+  }
+}
+
+static double measure_row_major(int array[LEN][LEN]) {
+  unsigned sum; int i, j, n; clock_t start, end;
+
+  start = clock();
+  sum = 0;
+  for (int n = N; n > 0; n -= 1)
+    for (int i = 0; i < LEN; i++)
+      for (int j = 0; j < LEN; j++)
+        sum ^= array[i][j] << (j % 24);
+  csum = sum;
+  end = clock();
+  return (double)(end - start) / CLOCKS_PER_SEC;
+}
+
+static double measure_column_major(int array[LEN][LEN]) {
+  unsigned sum; int i, j, n; clock_t start, end;
+
+  sum = 0;
+  start = clock();
+  for (n = N; n > 0; n -= 1)
+    for (j = 0; j < LEN; j++)
+      for (i = 0; i < LEN; i++)
+        sum ^= array[i][j] << (j % 24);
+  csum = sum;
+  end = clock();
+  return (double)(end - start) / CLOCKS_PER_SEC;
+}
+
+static double measure_strange(int array[LEN][LEN]) {
+  unsigned sum; int i, j, n, m, k; clock_t start, end;
+
+  sum = 0;
+  start = clock();
+  for (n = N; n > 0; n -= 1)
+    for (m = 0; m < JUMP; m++)
+      for (j = m; j < LEN; j += JUMP)
+        for (k = 0; k < JUMP; k++)
+          for (i = k; i < LEN; i += JUMP)
+            sum ^= array[i][j] << (j % 24);
+  csum = sum;
+  end = clock();
+  return (double)(end - start) / CLOCKS_PER_SEC;
+}
+<details><summary></summary>
+int main(void) {
+  int ok; int (*array)[LEN]; double row_major_time, column_major_time, strange_time;
+
+  array = malloc(sizeof(int) * LEN * LEN);
+  ok = (array != NULL);
+  if (!ok) {
+    fprintf(stderr, "Memory allocation failed\n");
+  } else {
+    fill_array(array);
+
+    row_major_time = measure_row_major(array);
+    printf("Row-major order:      %.5f seconds; %u\n", row_major_time, csum);
+    column_major_time = measure_column_major(array);
+    printf("Column-major order:   %.5f seconds; %u\n", column_major_time, csum);
+    strange_time = measure_strange(array);
+    printf("Column-strange order: %.5f seconds; %u\n", strange_time, csum);
+
+    free(array);
+  }
+  return ok;
+}</details></code></pre>
+
+<p>Я заказал этот тест, потому что хотел конкретных измерений работы процессора при влиянии кэша на вычислительную сложность алгоритма, но в не меньшей степени удалось проверить и компиляторы, потому что в этом тесте они изрядно отличились. На неправильном обходе сlang поломался и выдал совсем плохой результат, который оказался даже хуже, чем при выключенной оптимизации. gcc же наоборот c -O3 сумел распознать паттерн и неправильный обход превратить в правильный, уравняв скорость. Это и побудило меня добавить более сложный обход с прыжками, позволяющими лучше представить произвольный доступ. На нём поломался уже и gcc, тоже выдав результат хуже, чем неоптимизированный.</p>
+
+<p>Замеры для обхода большого массива:</p>
+<table>
+  <tr><td>процессор</td><td>Intel® Core™ i7-1185G7</td></tr>
+  <tr><td>gcc</td><td>13.2.0</td></tr>
+  <tr><td>clang</td><td>18.1.3</td></tr>
+  <tr><td>tcc</td><td>0.9.27</td></tr>
+</table>
+<pre><code>: clang main.c -O0 -DBIG && ./a.out
+Row-major order:      0.54849 seconds; 1923116029
+Column-major order:   2.88732 seconds; 1923116029
+Column-strange order: 5.88750 seconds; 1923116029
+
+: clang main.c -O3 -DBIG && ./a.out
+Row-major order:      0.17319 seconds; 1923116029
+Column-major order:   3.15131 seconds; 1923116029
+Column-strange order: 7.96815 seconds; 1923116029
+
+: gcc main.c -O0 -DBIG && ./a.out
+Row-major order:      0.89732 seconds; 1923116029
+Column-major order:   3.04100 seconds; 1923116029
+Column-strange order: 7.77280 seconds; 1923116029
+
+: gcc main.c -O3 -DBIG && ./a.out
+Row-major order:      0.35919 seconds; 1923116029
+Column-major order:   0.35695 seconds; 1923116029
+Column-strange order: 8.03063 seconds; 1923116029
+
+: tcc main.c -O3 -DBIG && ./a.out
+Row-major order:      0.69452 seconds; 1923116029
+Column-major order:   2.97060 seconds; 1923116029
+Column-strange order: 7.41493 seconds; 1923116029
+</code></pre>
+
+<p>Для полноты картины сделаны замеры для обхода малого массива, который должен хорошо помещаться в кэш. Тут тоже не обошлось без сюрприза. Если без оптимизаций обходы ожидаемо оказались в целом сопоставимы по скорости, то при высокой оптимизации «неправильный» обход оказался значительно быстрее «правильного». Замеры показывают, что не только человек, но и компилятор изрядно путается при выборе лучшего способа обхода массива в условиях сложной логики доступа.</p>
+
+<pre><code>: clang main.c -O0 && ./a.out
+Row-major order:      2.15677 seconds; 1374448224
+Column-major order:   2.17528 seconds; 1374448224
+Column-strange order: 2.95493 seconds; 1374448224
+
+: clang main.c -O3 && ./a.out
+Row-major order:      1.00091 seconds; 1374448224
+Column-major order:   0.25905 seconds; 1374448224
+Column-strange order: 0.37111 seconds; 1374448224
+
+: gcc main.c -O0 && ./a.out
+Row-major order:      3.80649 seconds; 1374448224
+Column-major order:   3.73850 seconds; 1374448224
+Column-strange order: 3.89375 seconds; 1374448224
+
+: gcc main.c -O3 && ./a.out
+Row-major order:      1.38273 seconds; 1374448224
+Column-major order:   1.38412 seconds; 1374448224
+Column-strange order: 0.72818 seconds; 1374448224
+
+: tcc main.c -O0 && ./a.out
+Row-major order:      2.80466 seconds; 1374448224
+Column-major order:   2.46870 seconds; 1374448224
+Column-strange order: 3.21835 seconds; 1374448224
+</code></pre>
+
+
+<p>В хорошем, ясном языке программирования должно быть как можно меньше подобных имитаций. В нашем случае всё это произошло из-за несоответствия машинного языка решаемым задачам, из-за чего и пришлось лепить сложную многослойную систему виртуализаций.</p>
+
+</body>
+</html>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Насыщенный код</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body>
+<h2>Пример насыщенного текста для исходного кода</h2>
+<p>Здесь показан прообраз документа для кода, позволяющий отображать текст с разными словарями. Синтаксис таких текстов, разумеется, остаётся одним и тем же в любом выборе словаря, так как состав не меняется. HTML плохо подходит для таких вещей, но на то это и прообраз. По крайней мере HTML позволяет настроить отображение другого словаря выбором нужного стиля, обойдясь без изменений основного текста.
+</p>
+
+<!--more-->
+
+<style>
+  pre, code {
+    font-family: "Ubuntu Mono","Söhne Mono",Monaco,Andale Mono,monospace;
+    background-color:#F8F8F8;
+    line-height: 1.3;
+    overflow-x: auto;
+    padding: 2px; 
+    color: #111;
+  }
+  
+  pre code[pl="typograph"] {
+    white-space: nowrap; /* Отключает перенос строк */
+    overflow-x: auto; /* Добавляет горизонтальную прокрутку, если текст слишком длинный */
+    font-family: sans; 
+  }
+
+  
+  code[pl="oberon-like"] module::before {content: 'MODULE ' attr(name) ';';}
+  code[pl="oberon-like"] module::after {content: 'END ' attr(name) '.';}
+  
+  code[pl="typograph"] module::before {
+    content: attr(name); 
+    font-size: 1.5em;
+    font-weight: bold;
+    /*margin: 0.67em 0;*/
+  }
+  code[pl="typograph"] module {
+    display: inline-block;
+    padding: 0.5em 1em;
+    border: 1px solid #ccc; 
+    border-radius: 0.5em; 
+    background-color: #f9f9f9; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  code[pl="оберон"] module::before {content: 'РАЗДЕЛ ' attr(name) ';';}
+  code[pl="оберон"] module::after {content: ';; ' attr(name) '.';}
+
+  code[pl="go-like"] module::before {content: 'package ' attr(name) ';';}
+  code[pl="go-like"] module::after {content: '';}
+  
+  code[pl="oberon-like"] procedure::before {content: 'PROCEDURE ' attr(name);}
+  code[pl="oberon-like"] procedure::after {content: 'END ' attr(name) ';';}
+  code[pl="oberon-like"] begin::before {content: 'BEGIN';}
+  code[pl="oberon-like"] var::before {content: '\A  VAR ';}
+  code[pl="oberon-like"] var::after {content: '\A  BEGIN';}
+
+  code[pl="typograph"] procedure {
+    display: block; /* Блочный элемент для процедуры */
+    padding: 0.5em 1em; /* Внутренние отступы */
+    border: 1px solid #ccc; /* Рамка */
+    border-radius: 0.5em; /* Закругленные углы */
+    background-color: #FFF; /* Нежный цвет для фона */
+    /*margin: 0.5em 0; /* Отступы сверху и снизу */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Тень */
+  }
+
+  code[pl="typograph"] procedure::before {
+    content: attr(name);
+    font-size: 1.2em; /* Размер шрифта для заголовка */
+    font-weight: bold; /* Жирный шрифт */
+    margin-bottom: 0.3em; /* Отступ снизу */
+    color: #333; /* Цвет текста */
+  }
+  
+  code[pl="typograph"] var {
+    display: block; /* Блочный элемент для процедуры */
+    padding: 0.5em 1em; /* Внутренние отступы */
+    border: 1px solid #DDD; /* Рамка */
+    border-radius: 0.5em; /* Закругленные углы */
+  }
+
+ 
+  code[pl="oberon-like"] procedure::before {content: 'PROCEDURE ' attr(name);}
+  code[pl="oberon-like"] procedure::after {content: 'END ' attr(name) ';';}
+  code[pl="oberon-like"] begin::before {content: 'BEGIN';}
+  code[pl="oberon-like"] var::before {content: '\A  VAR ';}
+  code[pl="oberon-like"] var::after {content: '\A  BEGIN';}
+
+  code[pl="оберон"] procedure::before {content: 'ДЕЛО ' attr(name);}
+  code[pl="оберон"] procedure::after {content: ';; ' attr(name) ';';}
+  code[pl="оберон"] begin::before {content: 'BEGIN';}
+  code[pl="оберон"] var::before {content: ';\A   ';}
+  code[pl="оберон"] var::after {content: '\A  ::';}
+  
+  code[pl="go-like"] procedure::before {content: 'func ' attr(name);}
+  code[pl="go-like"] procedure::after {content: '}';}
+  code[pl="go-like"] begin::before {content: 'BEGIN';}
+  code[pl="go-like"] var::before {content: ' {\A    var ( ';}
+  code[pl="go-like"] var::after {content: ')';}
+
+  code[pl="oberon-like"] while::before {content: 'WHILE ';}
+  code[pl="oberon-like"] while::after {content: 'END;';}
+  code[pl="oberon-like"] do::before {content: 'DO';}
+
+  code[pl="typograph"] while::before {content: 'while '; margin-left:-1em;}
+  code[pl="typograph"] while {
+    display: inline-block;
+    padding: 0.0em 1.5em;
+    border: 1px solid #EEE; 
+    border-radius: 0.5em;
+  }
+
+  code[pl="оберон"] while::before {content: 'ПОКА ';}
+  code[pl="оберон"] while::after {content: ';;';}
+  code[pl="оберон"] do::before {content: ':';}
+
+  code[pl="go-like"] while::before {content: 'for ';}
+  code[pl="go-like"] while::after {content: '}';}
+  code[pl="go-like"] do::before {content: '{';}
+  
+  code[pl="oberon-like"] if::before {content: 'IF ';}
+  code[pl="oberon-like"] then::before {content: 'THEN';}
+  code[pl="oberon-like"] if::after {content: 'END;';}
+
+  code[pl="typograph"] if::before {content: 'if '; margin-left:-1em;}
+  code[pl="typograph"] if {
+    background-color: #F8F8F8;
+    display: inline-block;
+    padding: 0.0em 1.5em;
+    border: 1px solid #EEE;
+    border-radius: 0.5em;
+  }
+  code[pl="typograph"] then::before {content: '\a'; white-space:pre;}
+  
+  code[pl="оберон"] if::before {content: 'ЕСЛИ ';}
+  code[pl="оберон"] then::before {content: ':';}
+  code[pl="оберон"] if::after {content: ';;';}
+
+  code[pl="go-like"] if::before {content: 'if ';}
+  code[pl="go-like"] then::before {content: '{';}
+  code[pl="go-like"] if::after {content: '}';}
+  
+  code[pl="oberon-like"] let::before {content: attr(des) ' := ';} 
+  code let::after {content: ';';}
+  code[pl="oberon-like"] return::before {content: 'RETURN ';}
+  code[pl="oberon-like"] comment::before {content: '(* '; color: gray; font-style: italic;}
+  code[pl="oberon-like"] comment::after {content: ' *)'; color: gray; font-style: italic;}
+
+  code[pl="typograph"] let::before {content: attr(des) ' \27F5  ';} 
+  code[pl="typograph"] let::after {content: ';\a'; white-space:pre;}
+  code[pl="typograph"] return::before {content: 'return ';}
+  code[pl="typograph"] comment::before {content: '*  '; color: gray; font-style: italic; position: relative; top: -0.5em; font-size: 0.8em;}
+  code[pl="typograph"] comment { margin-left: 2em; border-radius: 0.5em;  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4); }
+ 
+  code[pl="оберон"] let::before {content: attr(des) ' := ';}
+  code[pl="оберон"] return::before {content: 'ИТОГ ';}
+  code[pl="оберон"] comment::before {content: '(* '; color: gray; font-style: italic;}
+  code[pl="оберон"] comment::after {content: ' *)'; color: gray; font-style: italic;}
+  
+  code[pl="go-like"] let::before {content: attr(des) ' = ';}
+  code[pl="go-like"] return::before {content: '  return ';}
+  code[pl="go-like"] comment::before {content: '/* '; color: gray; font-style: italic;}
+  code[pl="go-like"] comment::after {content: ' */'; color: gray; font-style: italic;}
+  
+  code comment {color: #444; font-style: italic; background-color: #F0F0F0;}
+  code var {font-style: normal;}
+  
+  code[pl="typograph"] comment::after {content: ' \A'; white-space:pre;}
+
+  code[pl="oberon-like"] real::before {content: 'REAL';}
+  code[pl="oberon-like"] integer::before {content: 'INTEGER';}
+  
+  code[pl="typograph"] real::before {content: 'real';}
+  code[pl="typograph"] integer::before {content: 'integer';}
+  
+  code[pl="typograph"] real::before, 
+  code[pl="typograph"] integer::before,
+  code[pl="typograph"] while::before,
+  code[pl="typograph"] if::before,  
+  code[pl="typograph"] odd::before,
+  code[pl="typograph"] assert::before,
+  code[pl="typograph"] return::before,
+  code[pl="typograph"] dv::before{
+    color:#444;
+    font-family: "Ubuntu Mono","Söhne Mono",Monaco,Andale Mono,monospace;
+  }
+
+  code[pl="оберон"] real::before {content: 'ДРОБЬ';}
+  code[pl="оберон"] integer::before {content: 'ЦЕЛ';}
+
+  code[pl="go-like"] real::before {content: 'float64';}
+  code[pl="go-like"] integer::before {content: 'int';}
+
+  code[pl="oberon-like"] assert::before {content: 'ASSERT';}
+  code[pl="oberon-like"] odd::before {content: 'ODD(';}
+  code[pl="oberon-like"] odd::after {content: ')';}
+  code[pl="oberon-like"] dv::before {content: 'DIV';}
+  
+  code[pl="typograph"] assert::before {content: 'assert';}
+  code[pl="typograph"] odd::before {content: 'odd ';}
+  code[pl="typograph"] dv::before {content: 'div';}
+  
+  code[pl="оберон"] assert::before {content: 'ВСЕГДА';}
+  code[pl="оберон"] odd::before {content: '(1 = ';}
+  code[pl="оберон"] odd::after {content: ' ОСТ 2)';}
+  code[pl="оберон"] dv::before {content: 'ДЕЛ';}
+  
+  code[pl="go-like"] assert::before {content: 'assert';}
+  code[pl="go-like"] odd::before {content: '(1 == ';}
+  code[pl="go-like"] odd::after {content: ' % 2)';}
+  code[pl="go-like"] dv::before {content: '/';}
+  
+  fraction {
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+  }
+  fraction num {
+    display: block;
+  }
+  fraction denom {
+    border-top: 1px solid black;
+    display: block;
+  }
+  
+  hex[hl="latin"] h10::before {content: 'A';}
+  hex[hl="latin"] h11::before {content: 'B';}
+  hex[hl="latin"] h12::before {content: 'C';}
+  hex[hl="latin"] h13::before {content: 'D';}
+  hex[hl="latin"] h14::before {content: 'E';}
+  hex[hl="latin"] h15::before {content: 'F';}
+  
+  hex[hl="cyrmn"] h10::before {content: 'Н';}
+  hex[hl="cyrmn"] h11::before {content: 'Е';}
+  hex[hl="cyrmn"] h12::before {content: 'Д';}
+  hex[hl="cyrmn"] h13::before {content: 'Т';}
+  hex[hl="cyrmn"] h14::before {content: 'К';}
+  hex[hl="cyrmn"] h15::before {content: 'П';}
+  
+
+  hex[hl="overline"]::after {content: '16'; font-size: 0.7em; position:relative; bottom:-0.2em;} 
+  hex[hl="overline"] h10::before {content: '0'; text-decoration:underline; color:#000; }
+  hex[hl="overline"] h11::before {content: '1'; text-decoration:underline; color:#000; }
+  hex[hl="overline"] h12::before {content: '2'; text-decoration:underline; color:#000; }
+  hex[hl="overline"] h13::before {content: '3'; text-decoration:underline; color:#000; }
+  hex[hl="overline"] h14::before {content: '4'; text-decoration:underline; color:#000; }
+  hex[hl="overline"] h15::before {content: '5'; text-decoration:underline; color:#000; }
+
+  hex[hl="latin"]::after {content: 'H';} 
+  hex[hl="latin"] h10::before {content: 'A';}
+  hex[hl="latin"] h11::before {content: 'B';}
+  hex[hl="latin"] h12::before {content: 'C';}
+  hex[hl="latin"] h13::before {content: 'D';}
+  hex[hl="latin"] h14::before {content: 'E';}
+  hex[hl="latin"] h15::before {content: 'F';}
+
+</style>
+
+  <select onchange="document.querySelector('.module').setAttribute('pl', this.value);">
+    <option value="oberon-like">Oberon-like</option>
+    <option value="go-like">Go-like</option>
+    <option value="оберон">По-русски</option>
+    <option value="typograph">типографский</option>
+  </select>
+
+<pre><code class='module' pl='oberon-like'><MODULE name='Power'>
+
+ <PROCEDURE name='Do'>*(x: <REAL/>; n: <INTEGER/>): <REAL/><VAR>y: <REAL/>; i: <INTEGER/>; </VAR>
+   <ASSERT/>(n >= 0);<br/><br/>   <LET des='y'>1.0</LET>
+   <LET des='i'>n</LET><br/>
+   <WHILE>i &gt; 0 <DO/> <COMMENT>x<sub>0</sub><sup>n</sup> = x<sup>i</sup> * y </COMMENT>
+     <IF><ODD>i</ODD> <THEN/> 
+       <LET des='y'>y*x</LET> 
+     </IF><br/>     <LET des='x'>x*x</LET>
+     <LET des='i'>i <DV/> 2</LET>
+   </WHILE><br/>
+ <RETURN>y</RETURN>
+ </PROCEDURE>
+
+</MODULE></code></pre>
+
+<p>Если транслятор работает не с плоским печатным текстом, а с насыщенным форматом общего назначения, то проверив свойства текста как кода на соответствующем языке, он может прописать в документе существующие связи частей с их свойствами. Такой текст, будучи помещённый в любой просмотрщик, ничего не знающем о языке, тем не менее сохраняет многие свои свойства и вне инструментов программиста, позволяя читателю взаимодействовать с ними. Возможность смены стиля лексики — это лишь одна из немногих потенциальных возможностей.</p>
+
+<p>Для лучшего использования возможностей насыщенного текстового формата, языки программирования не должны рассматривать его только как ёмкость для хранения кода в печатном формате, а включать особенности насыщенного текста в сам язык. Например, можно использовать вертикальное смещение литер, подобно тому, как это происходит в рукописном или типографском тексте.</p>
+
+<pre><code>x<sup>n</sup>  <comment>вместо</comment>  x^n  <comment>или</comment>  x**n
+
+m = <fraction>x<sub>1</sub> + x<sub>2</sub><denom>2</denom></fraction>  <comment>вместо</comment>  m = (x1 + x2) / 2</code></pre>
+
+<p id='hex'>Насыщенный формат предоставляет интереcную возможность для изображения шестнадцатеричных чисел</p>
+<pre><hex hl='latin'>0<h14/><h13/><h11/>88320</hex>
+<hex hl='overline'> <h14/><h13/><h11/>88320</hex>
+<hex hl='overline'> <h14/><h13/><h11/>8&#8239;8320</hex> с тонким неразрывным пробелом
+</pre>
+
+</body>
+</html>

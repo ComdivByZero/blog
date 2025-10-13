@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>16-ричность</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body>
+<h2>16-ричные постоянные на кириллице</h2>
+  
+<p>Как показал опрос небольшого количества русскоязычных разработчиков, имеющих дело с шестнадцатеричными числами, несмотря на удобство их использования при работе с байтами, не до конца удаётся раскрыть это удобство, так как значения цифр, передаваемых латинскими буквами от A до F, оказываются не совсем очевидными, и хотя, казалось бы, сопоставления цифр должны были бы запомниться со временем, разработчики прибегают к неявному счёту в уме. Он хоть и быстр, но всё же ухудшает лёгкость работы.</p>
+
+<p>На мой взгляд, лучший способ изображения 16-ричных цифр предоставляет насыщенный формат текста<a href='#0'>[0]</a>. Правда, подавляющее большинство языков программирования не могли бы им воспользоваться, так как в основе их синтаксиса по-прежнему лежит плоский текстовый формат. Есть ещё один интересный вариант, но он тоже доступен только малораспространённому множеству языков программирования. Предлагаю на него посмотреть.</p>
+
+<!--more-->
+
+<style>table {border-spacing: 10px;} td {text-align:right;}
+  .hex-output {text-align: left; color:#222;}
+  .hex-output span {color:grey;}
+  input, .hex-output {width: 100%; font-family: "Ubuntu Mono","Söhne Mono",Monaco,Andale Mono,monospace; }
+  
+  table#conv { width: 90%; }
+  table#conv th {width: 96px;}
+</style>
+
+<p>Речь идёт о языках, использующих кириллицу в своей основе. Они как раз нуждаются в хорошем способе представления 16-ричных чисел, и вряд ли для них это использование первых букв латиницы как в большинстве языков. Естественно, что если заменить латинские буквы <code>ABCDEF</code> кириллическими <code>АБВГДЕ</code>, существенной разницы для разработчиков(славян) не будет, так как значения некоторых цифр всё равно будут получать счётом. Можно предположить, что можно улучшить запоминаемость, если применить смысловую замену.</p>
+
+<p>Самым очевидным было бы взять первые буквы словесных названий соответствующих чисел. Но в этом случае возникает естественное затруднение — десять начинается так же, как двеннадцать, а <b>О</b>диннадцать и <b>Ч</b>етырнадцать начинаются с букв, которые очень похожи на цифры<a href='#1'>[1]</a>. Полностью естественного набора не вышло, но как мне кажется, предложенные замены выглядят логично — <b>Н</b>оль<b>н</b>а<b>д</b>цать, <b>Е</b>дин<b>н</b>а<b>д</b>цать, <b>К</b>варт<b>н</b>а<b>д</b>цать.</p>
+
+<table>
+  <tr><th>дес.значение <th> смысл <th> кир.цифра <th> словом</tr>
+  <tr> 
+    <td>10 <td><b>Н</b>оль + 10   <td> Н         <td> нольнадцать
+  </tr>
+  <tr> 
+    <td>11 <td><b>Е</b>диница + 10 <td> Е         <td> единнадцать
+  </tr>
+  <tr> 
+    <td>12 <td><b>Д</b>войка + 10 <td> Д         <td> двенадцать
+  </tr>
+  <tr> 
+    <td>13 <td><b>Т</b>ройка + 10 <td> Т         <td> тринадцать
+  </tr>
+  <tr> 
+    <td>14 <td><b>К</b>варта, <b>К</b>вадро + 10 <td> К <td> квартнадцать
+  </tr>
+  <tr> 
+    <td>15 <td><b>П</b>ятёрка + 10 <td> П         <td> пятнадцать
+  </tr>
+</table>
+
+
+  <table id='conv'>
+  <tr>
+    <th><label for="latinInput">Латиница:</label></th>
+    <td><input type="text" id="latinInput" placeholder="A8 73 CF 0B B8 DD 0D 5E" oninput="convertToCyrillic(event)"></td>
+  </tr>
+    
+  <tr>
+    <th><label for="cyrillicInput">Кириллица:</label></th>
+    <td><input type="text" id="cyrillicInput" placeholder="Н8 73 ДП 0Е Е8 ТТ 0Т 5К" oninput="convertToLatin(event)"></td>
+  </tr>
+    
+  <tr>
+    <th><label>Насыщенный:</label></th>
+    <td><div id="richFormatOutput" class="hex-output"><span><u>0</u>8 73 <u>25</u> 0<u>1</u> <u>1</u>8 <u>33</u> 0<u>3</u> 5<u>4</u></span></div></td>
+  </tr>
+  </table>
+
+<p>Тут не помешало бы исследование скорости восприятия и доли ошибок при взаимодействии, но провести его несопоставимо более трудоёмко, чем что-либо придумать.</p>
+
+<br/>
+<br/>
+<a href='#0'>[0]</a> <a href='multilex.html#hex'>пример 16-ричных чисел в насыщенной формате</a><br/>
+<a href='#1'>[1]</a> Хотя во многих шрифтах цифры «0» и «4» существенно отличаются от букв «О» и «Ч», но попробуйте дать гарантию, что никогда не спутаете <code title='3774'>ЧОЧ</code> с четыреста четыре.
+
+<script>
+  const latinToCyrillic = {'A': 'Н', 'B': 'Е', 'C': 'Д', 'D': 'Т', 'E': 'К', 'F': 'П'};
+  const cyrillicToLatin = {'Н': 'A', 'Е': 'B', 'Д': 'C', 'Т': 'D', 'К': 'E', 'П': 'F'};
+
+  function highlightRichFormat(input) {
+    return input.replace(/[A-F]/gi, function(char) {
+      if (/[A-F]/i.test(char)) {
+        char = `<U>${parseInt(char, 16) - 10}</U>`;
+      }
+      return char;
+    });
+  }
+
+  function convert(event, regexp, table, itemId) {
+    function replaceChar(char) { return table[char.toUpperCase()] || char; }
+    var inp, input, output;
+    
+    input = event.target.value;
+    output = input.replace(regexp, replaceChar);
+    document.getElementById(itemId).value = output;
+
+    if (table == latinToCyrillic) {
+      inp = input;
+    } else {
+      inp = output;
+    }
+    document.getElementById('richFormatOutput').innerHTML = highlightRichFormat(inp);
+  }
+
+  function convertToCyrillic(event) { convert(event, /[A-F]/gi, latinToCyrillic, 'cyrillicInput') }
+  function convertToLatin(event) { convert(event, /[НЕДТКП]/gi, cyrillicToLatin, 'latinInput') }
+</script>
+
+</body>
+</html>
