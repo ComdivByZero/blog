@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Утиная типизация</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Утиная типизация обманывает</h2>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiB5UhsDmI9AgQsvRIzgP6FT8QZdjCPpUF_htzVJOsc7-KfYe8-OH9XaGVWED-xynkp0X1FgXYN2j1AxtuAYnyWHGMhszUa96jvUdIW4_ml95vVX5BASSRq0AYedhm-8Sf9QKeXFITpJU2cAz3kr4ikJXEG4n0yi1d1N2QRaYNV_-sSxutQWWoESH97dgg/s1536/ChatGPT%20Image%20Apr%2030,%202025,%2002_00_09%20PM.png" style="display: block; padding: 1em 0; text-align: center; clear: right; float: right;"><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1536" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiB5UhsDmI9AgQsvRIzgP6FT8QZdjCPpUF_htzVJOsc7-KfYe8-OH9XaGVWED-xynkp0X1FgXYN2j1AxtuAYnyWHGMhszUa96jvUdIW4_ml95vVX5BASSRq0AYedhm-8Sf9QKeXFITpJU2cAz3kr4ikJXEG4n0yi1d1N2QRaYNV_-sSxutQWWoESH97dgg/s320/ChatGPT%20Image%20Apr%2030,%202025,%2002_00_09%20PM.png"/></a></div>
+
+<p>Считается, что неявная типизация позволяет связать слабо связанные типы, поскольку не требует указывать воплощаемые интерфейсы. Но для того, чтобы связывание через интерфейс работало, необходимо, чтобы тот, кто создаёт его воплощение, хотя и не прописывал бы явно включение самого интерфейса, но всё равно чётко бы следовал его описанию. Иначе даже похожие системы могут легко оказаться несовместимыми, хотя бы и по другому порядку параметров или их названиям, и что намного важнее — по деталям ожидаемого поведения.</p>
+<!--more-->
+<p> Это значит, что в правильном коде прямая связь между интерфейсом и воплощением всё равно существует, но присутствует лишь в голове, и, возможно, документации, но не в самом коде. Хорошая формальная система не должна прятать важные детали, а наоборот, должна выносить их в явную схему<a href='#0'>[0]</a>. 
+</p>
+
+<p>Единственная задача, которую решает утиная типизация — это отказ автора языка програмиирования от создания хорошей формальной системы в расчёте на то, что автор кода сам как-нибудь порешает без лишнего сопротивления языка, но также и без его помощи. Поэтому это слабость, пусть нередко она и преподносится как преимущество.</p>
+
+<br/>
+<a id='0'>[0]</a> Смотрите также <a href='../2021/03-25-coding-language.html'>заметку про ложную идею программирования с помощью языка, а не на языке</a>.
+</body>
+</html>
