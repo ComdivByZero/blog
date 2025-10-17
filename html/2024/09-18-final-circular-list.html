@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Кольцевой список</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body>
+<h2>Финализированный кольцевой список на Java + концепция</h2>
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjLDDPrJYs1aeNpUIMpYhgIC1SZA-GxgMp_FnLEbOah7ZDSCr4ua4lCb9z9dF5m_VTKWl8U76U-4hJ7MuTnOpuBa8PUfIJIsgyUMhiiv4xcow8klXb2wzJKOP8vHsNBRNU1JaMvp-2CVzjXPulN1t5WTAstrphtAemYpt9tiZIcN2nI_ssrRAKt9RBpWrEt/s1792/DALL%C2%B7E%202025-01-20%2019.48.38%20-%20A%20surreal%20representation%20of%20a%20closed%20chain%20depicted%20as%20a%20circular,%20interconnected%20loop.%20The%20chain%20links%20are%20glowing%20metallic%20with%20intricate%20designs,%20c.webp" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="600" data-original-height="1024" data-original-width="1792" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjLDDPrJYs1aeNpUIMpYhgIC1SZA-GxgMp_FnLEbOah7ZDSCr4ua4lCb9z9dF5m_VTKWl8U76U-4hJ7MuTnOpuBa8PUfIJIsgyUMhiiv4xcow8klXb2wzJKOP8vHsNBRNU1JaMvp-2CVzjXPulN1t5WTAstrphtAemYpt9tiZIcN2nI_ssrRAKt9RBpWrEt/s600/DALL%C2%B7E%202025-01-20%2019.48.38%20-%20A%20surreal%20representation%20of%20a%20closed%20chain%20depicted%20as%20a%20circular,%20interconnected%20loop.%20The%20chain%20links%20are%20glowing%20metallic%20with%20intricate%20designs,%20c.webp"/></a></div>
+
+<p>Обратная связь представляет собой определённую сложность для финализированного списка в Java, ведь все элементы должны косвенно ссылаться друг на друга, а установка финализированного значения возможна только внутри конструктора. Это препятствие можно преодолеть с помощью <em>простого советского ...</em> <!--more--> рекурсивного конструктора.</p>
+
+
+
+<style>a.self::before { content: attr(href); } pre, code {background-color:#F8F8F8;} pre {overflow:auto;}
+  p em {display:none}
+</style>
+
+<pre><code>public final class Node&lt;T> {
+  final T value;
+  final Node next;
+
+  private Node(Iterator&lt;T> values, Node head) {
+    this.value = values.next();
+    if (values.hasNext()) {
+      this.next = new Node(values, head);
+    } else {
+      this.next = head;
+    }
+  }
+
+  public Node(Iterable&lt;T> values) {
+    Iterator it;
+
+    it = values.iterator();
+    this.value = it.next();
+    if (it.hasNext()) {
+      this.next = new Node(it, this);
+    } else {
+      this.next = this;
+    }
+  }
+  
+}
+
+Node&lt;T> list = new Node(Arrays.asList(1, 2, 3));
+</code></pre>
+
+<p>Более удачно спроектированный язык должен позволять обходиться без рекурсии. Впрочем, слово «удачно» здесь может быть спорным, так как такой язык, вероятно, не может не быть сложней понятийно. Например, так:</p>
+
+<pre><code>public final class Node&lt;T> {
+  fixed T value;
+  Node next;
+
+  private  isolated Node(fixed T value) {
+    this.value = value;
+  }
+
+  public static  isolated Node create(Iterable&lt;fixed T> values) {
+    isolated { Node head, cur; };
+    Iterator&lt;fixed T> it;
+
+    it = values.iterator();
+    head = new Node(it.next());
+    cur = head;
+    while (it.hasNext()) {
+      cur.next = new Node(it.next());
+      cur = cur.next;
+    }
+    cur.next = head;
+
+    return head;
+  }
+  
+}
+
+fixed Node&lt;T> list = Node.create(Arrays.asList(1, 2, 3));
+</code></pre>
+
+<p>Характеристики <code>fixed</code>, <code>isolated</code> могли бы отслеживаться в неявном виде за счёт дополнительного усложнения транслятора, и тогда бы для программиста это могло выглядеть как просто вопрос написания правильного кода. Проблема в том, что просто, да не просто, потому что в случае ошибки, сложно было бы объяснить, как эти неявные модификаторы взаимодействуют по цепи причин и следствий, и приводят к такой диагностике.</p>
+
+
+</body>
+</html>
