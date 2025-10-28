@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EXIT в Oberon</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Пустили EXIT в Oberon</h2>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjg5kHRcio48eG5-0FK2VuBYx8oqgVX1dNrRVkr_LS_IEaORA6OC-fBQuiRQps-bcdwdcTAegWVfOc_Vvherrl8hDCzjaoezyZ1evIdq7kSxZPO6znfvAo6jr0zUCHBFOUVmxSYNKeL8v-pjBlK0eTaE0xEcwk_Xd2IHWd_5urm_zE-IfDZBZeX7ROwR0Z3/s1792/DALL%C2%B7E%202023-11-25%2017.59.33%20-%20A%20wide-angle%20view%20of%20a%20digital%20goat%20in%20a%20spacious%20digital%20garden,%20leaping%20over%20an%20elongated%20digital%20fence.%20The%20scene%20is%20enhanced%20with%20a%20digital,%20pixel.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="600" data-original-height="1024" data-original-width="1792" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjg5kHRcio48eG5-0FK2VuBYx8oqgVX1dNrRVkr_LS_IEaORA6OC-fBQuiRQps-bcdwdcTAegWVfOc_Vvherrl8hDCzjaoezyZ1evIdq7kSxZPO6znfvAo6jr0zUCHBFOUVmxSYNKeL8v-pjBlK0eTaE0xEcwk_Xd2IHWd_5urm_zE-IfDZBZeX7ROwR0Z3/s600/DALL%C2%B7E%202023-11-25%2017.59.33%20-%20A%20wide-angle%20view%20of%20a%20digital%20goat%20in%20a%20spacious%20digital%20garden,%20leaping%20over%20an%20elongated%20digital%20fence.%20The%20scene%20is%20enhanced%20with%20a%20digital,%20pixel.png"/></a></div>
+
+<p>Многие из немногих, программирующих на диалектах языка Oberon, полагают, что циклы FOR, WHILE и REPEAT не содержат иного способа досрочно прервать их выполнение кроме как через выход из процедуры с помощью неструктурного RETURN, и только специальный цикл LOOP по EXIT позволяет неструктурно покинуть его, не покидая саму процедуру. </p>
+
+<p>Как же легко людей обмануть. В Oberon, Oberon-2, Component Pascal, Active Oberon всегда можно было написать, например, так:</p>
+<pre><code>FOR i := 0 TO LEN(a) - 1 DO
+  IF a[i] = b THEN
+    EXIT
+  END
+END;</code></pre>
+
+<!--more-->
+
+<style>
+  pre, code { background-color: #E8E8EF; color: black; overflow: auto;}
+  code > span { color: #555; }
+</style>
+
+<p>Не только перечисленные циклы, но и обычное ветвление допускает неструктурные прыжки вперёд. А вся загвоздка в том, что если EXIT есть в LOOP, значит, он есть везде. И полный пример для FOR выглядит так:</p>
+
+<pre><code><span>LOOP </span>FOR i := 0 TO LEN(a) - 1 DO
+  IF a[i] = b THEN
+    EXIT
+  END
+END<span>; EXIT END</span>
+</code></pre>
+
+
+<p>Естественно, это антипаттерн. Но только начиная с Oberon-07 так просто уже не поскачешь. Революционный язык!</p>
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjqRuEDAAkJPhyQFaGrVJYXnUAd0JsB7wXaIswdodJl_NBf-ZoWtfXsc9FobnmH-7jGuZUOhr9mzthQUfxZ2ydWcmLw3KA-R2D_uAqLfH39rq85pAFg3oVWnv2OmM7q-TTlB-reQsCn6Q6H4xAxCRleebx6QjkTI5rBUoZuk6o8jyokGW5N0bHJ7qnLjafu/s1024/DALL%C2%B7E%202023-11-25%2018.42.38%20-%20A%20digital%20goat%20in%20a%20digital%20garden,%20standing%20with%20its%20head%20sadly%20bowed%20down,%20and%20its%20legs%20shackled%20by%20digital%20chains%20to%20heavy%20digital%20weights.%20The%20sce.png" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="600" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjqRuEDAAkJPhyQFaGrVJYXnUAd0JsB7wXaIswdodJl_NBf-ZoWtfXsc9FobnmH-7jGuZUOhr9mzthQUfxZ2ydWcmLw3KA-R2D_uAqLfH39rq85pAFg3oVWnv2OmM7q-TTlB-reQsCn6Q6H4xAxCRleebx6QjkTI5rBUoZuk6o8jyokGW5N0bHJ7qnLjafu/s600/DALL%C2%B7E%202023-11-25%2018.42.38%20-%20A%20digital%20goat%20in%20a%20digital%20garden,%20standing%20with%20its%20head%20sadly%20bowed%20down,%20and%20its%20legs%20shackled%20by%20digital%20chains%20to%20heavy%20digital%20weights.%20The%20sce.png"/></a></div>
+
+</body>
+</html>
