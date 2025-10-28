@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Возврат по ссылке</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Последствия возврата значения через неявную ссылку</h2>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbhyHxU54fUznlIPPgRQyHB8Q0hFHkKMc_XbU_hh2VPpZvgVuNTqh9ErbT4Tg4sM6VFjzuUoDrlmHVPaHiN7sVYNwk1lcOkIPzRH2Psw69VFAXRztQ1HAbKpIv4WR60lRmV53Z5xR9NKOAcNL5-GMJk4Z9zwrxL3b0-Eeyr8HCQt-fvdeGDbtI61EAtV1I/s1024/DALL%C2%B7E%202024-03-16%2013.57.57%20-%20In%20a%20metaphorical%20and%20dark%20illustration,%20a%20slim%20programmer,%20wearing%20tattered%20clothes%20and%20boxing%20gloves,%20is%20engaged%20in%20a%20grim%20battle%20against%20an%20oversiz.webp" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="160" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhbhyHxU54fUznlIPPgRQyHB8Q0hFHkKMc_XbU_hh2VPpZvgVuNTqh9ErbT4Tg4sM6VFjzuUoDrlmHVPaHiN7sVYNwk1lcOkIPzRH2Psw69VFAXRztQ1HAbKpIv4WR60lRmV53Z5xR9NKOAcNL5-GMJk4Z9zwrxL3b0-Eeyr8HCQt-fvdeGDbtI61EAtV1I/s320/DALL%C2%B7E%202024-03-16%2013.57.57%20-%20In%20a%20metaphorical%20and%20dark%20illustration,%20a%20slim%20programmer,%20wearing%20tattered%20clothes%20and%20boxing%20gloves,%20is%20engaged%20in%20a%20grim%20battle%20against%20an%20oversiz.webp"/></a></div>
+<p>В Active Oberon в процедурах-функциях доступна локальная переменная <code>RESULT</code>. Она представляет собой ссылку на переменную, в которую возвращают значение. Это сделано для возможности экономить ресурсы при возврате структур (массивов, записей и указателей на них), но такое решение хранит в себе подвох.</p>
+
+<!--more-->
+
+<style>
+  pre, code { background-color: #EBEBEB; overflow: auto; color: black;}
+  td {padding: 5px;}
+  code i {color:grey;}
+  b.err {color:brown;}
+  b.inperr {color:green;}
+  b.runerr {color:darkred;}
+  pre a {float:right;}
+</style>
+
+<p>Если актуальный параметр совпадает с переменной, принимающей значение, есть риск пересечения ссылок, что может привести к ошибочному результату<a href='#[0]'>[0]</a>. </p>
+
+<pre><code>MODULE Reverse; IMPORT Out;
+
+ TYPE Arr = ARRAY 3 OF INTEGER;
+ 
+ PROCEDURE DoSurprize*(CONST a: Arr): Arr;
+ VAR i: INTEGER;
+ BEGIN
+  FOR i := 0 TO LEN(a) - 1 DO
+    RESULT[i] := a[LEN(a) - i - 1]
+  END;
+ RETURN RESULT
+ END DoSurprize;
+
+ PROCEDURE Do*        (CONST a: Arr): Arr;
+ VAR i: INTEGER; RESUIT: Arr;
+ BEGIN
+  FOR i := 0 TO LEN(a) - 1 DO
+    RESUIT[i] := a[LEN(a) - i - 1]
+  END;
+ RETURN RESUIT
+ END Do;
+
+ PROCEDURE Test*;
+  PROCEDURE Go(reverse: PROCEDURE(CONST a: Arr): Arr);
+  VAR i: INTEGER; a, b: Arr;
+  BEGIN
+    FOR i := 0 TO LEN(a) - 1 DO a[i] := i END;
+    b := reverse(a);
+    FOR i := 0 TO LEN(b) - 1 DO Out.Int(b[i], 4) END; Out.Ln;
+    b := reverse(b);
+    FOR i := 0 TO LEN(b) - 1 DO Out.Int(b[i], 4) END; Out.Ln; Out.Ln
+  END Go;
+ BEGIN
+  Go(Do);
+  Go(DoSurprize)
+ END Test;
+
+END Reverse.</code></pre>
+<p>Что приводит к результату:</p>
+<pre>   2   1   0
+   0   1   2
+
+   2   1   0
+   0   1   0</pre>
+
+<p>Можно делать и совсем странные вещи. Например, использовать выходную переменную в качестве входного значения и писать функции без явных параметров.</p>
+
+<pre><code>MODULE Reverse2; IMPORT Out;
+
+ TYPE Arr = ARRAY 4 OF INTEGER;
+ 
+ PROCEDURE Do*(): Arr;
+ VAR i, t: INTEGER;
+ BEGIN
+  FOR i := LEN(RESULT) DIV 2 TO 1 BY -1 DO
+    t := RESULT[i - 1];
+    RESULT[i - 1] := RESULT[LEN(RESULT) - i];
+    RESULT[LEN(RESULT) - i] := t
+  END;
+ RETURN RESULT
+ END Do;
+
+ PROCEDURE Test*; VAR i: INTEGER; a: Arr;
+ BEGIN
+  a := INTEGER([0, 1, 2, 3]);
+  a := Do();
+  FOR i := 0 TO LEN(a) - 1 DO Out.Int(a[i], 4) END; Out.Ln
+ END Test;
+
+END Reverse2.</code></pre>
+
+<pre>   3   2   1   0</pre>
+
+<br/>
+<h3>Примечания</h3>
+<a href='#[0]'>[0]</a> О выявлении пересечений параметров в Oberon читайте в <a href='https://vostok-space.blogspot.com/2023/12/equal-ref-check.html'>заметке</a>
+
+</body>
+</html>
