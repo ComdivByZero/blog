@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Свободное место</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Уведомление о свободном месте</h2>
+
+<style>pre {background-color:#EEE; overflow:auto;}</style>
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjpKKVzIewijSSxzD-kr1gYztyhKkOEySsGWU6Ww3wdDBvmSkkhAJ0fyV0cHXs696hjW-RZwe4sub6tv4i5Ql_ZzV2lUzy_OE87Qcb0ni7qpYaPHnunnOFhh7dAN7IDnKZ1hvT3ptcI2SAGMkWH7oASOrzx2s0rP9mfyO6deIgXqGO8UDgmpWvGGxq0Adho/s1024/DALL%C2%B7E%202024-01-07%2023.10.30%20-%20An%20illustration%20of%20an%20SSD%20with%20a%20clear%20visual%20indicator%20showing%20that%2025%25%20of%20its%20capacity%20is%20free.%20The%20indicator%20is%20a%20transparent%20ruler%20or%20chart%20in%20a%20b.png" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="160" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjpKKVzIewijSSxzD-kr1gYztyhKkOEySsGWU6Ww3wdDBvmSkkhAJ0fyV0cHXs696hjW-RZwe4sub6tv4i5Ql_ZzV2lUzy_OE87Qcb0ni7qpYaPHnunnOFhh7dAN7IDnKZ1hvT3ptcI2SAGMkWH7oASOrzx2s0rP9mfyO6deIgXqGO8UDgmpWvGGxq0Adho/s320/DALL%C2%B7E%202024-01-07%2023.10.30%20-%20An%20illustration%20of%20an%20SSD%20with%20a%20clear%20visual%20indicator%20showing%20that%2025%25%20of%20its%20capacity%20is%20free.%20The%20indicator%20is%20a%20transparent%20ruler%20or%20chart%20in%20a%20b.png"/></a></div>
+
+<p>По рекомендациям производителей SSD можно сделать вывод, что для поддержания скорости работы и продолжительности жизни таких накопителей важно поддерживать свободное место около 25% от их объёма. В то же время предупреждение пользователей GNU/Linux о нехватке места происходит гораздо позже необходимого срока — тогда, когда состояние совсем уже критическое. Всё потому что в настройках систем обычно фигурируют гораздо меньшие числа.</p>
+
+<p>Пользователи рабочей среды Gnome могут легко поменять настройки предупреждения:</p>
+
+<!--more-->
+
+<pre><code>for S in 'percent-notify 0.25' \
+         "percent-notify-again 0.10" \
+         'size-gb-no-notify 101'
+do
+  gsettings set org.gnome.settings-daemon.plugins.housekeeping free-$S
+done</code></pre>
+
+<p>Выставить аналогичные значения можно и через визуальную утилиту dconf-editor. А в очистке разделов могут помочь скрипты <a href="../2023/12-28-clean-gnu-linux.html">clean-gnu</a>.</p>
+
+</body>
+</html>
