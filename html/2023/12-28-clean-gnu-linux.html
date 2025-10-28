@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Очистка</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Очистка разделов GNU/Linux</h2>
+
+<style>a.self::before { content: attr(href); } p.fs {display: none;} pre {background-color:#EEE; overflow:auto;}</style>
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjfpjzALcc29yfzXfq7pvgiQLuPAV2q59giUlHhIgghtyjFqexIgERdA_ALj0xBE5UIHhsKLN3WDDzUl9f4O8d1p2ZlVhxHNi2X98fZLacueweEOGSFKCnXq0CqfEWoi2fHC_Lpb2zifNLavOFQvXruwrWMcgeKwI_FIcjDtavJq3GqhDmerIlWbc3hP-Kj/s1024/DALL%C2%B7E%202023-12-28%2021.10.38%20-%20Illustration%20parodying%20a%20scene%20from%20Pink%20Floyd%27s%20%27The%20Wall%27%20music%20video%20for%20an%20article%20titled%20%27Cleaning%20Partitions%20in%20GNU_Linux%27.%20Instead%20of%20schoolchi.png" style="display: block; padding: 0 2em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjfpjzALcc29yfzXfq7pvgiQLuPAV2q59giUlHhIgghtyjFqexIgERdA_ALj0xBE5UIHhsKLN3WDDzUl9f4O8d1p2ZlVhxHNi2X98fZLacueweEOGSFKCnXq0CqfEWoi2fHC_Lpb2zifNLavOFQvXruwrWMcgeKwI_FIcjDtavJq3GqhDmerIlWbc3hP-Kj/s320/DALL%C2%B7E%202023-12-28%2021.10.38%20-%20Illustration%20parodying%20a%20scene%20from%20Pink%20Floyd%27s%20%27The%20Wall%27%20music%20video%20for%20an%20article%20titled%20%27Cleaning%20Partitions%20in%20GNU_Linux%27.%20Instead%20of%20schoolchi.png"/></a></div>
+
+<p>Написал пару простых скриптов для автоматизации очистки разделов дистрибутивов GNU/Linux, преимущественно, основанных на Debian — <a href='https://github.com/ComdivByZero/clean-gnu' class='self'></a>. Это поверхностное удаление кэша установочных пакетов и давно не обновляемых каталогов с кэшем приложений, используя по возможности безопасное удаление через корзину.</p>
+
+<p>Существуют чистильщики с визуальным интерфейсом, например,
+  <a href='https://www.bleachbit.org/'>BleachBit</a>, но они предлагают пользователю самостоятельно решать, что удалять, таким образом требуя внимания и позволяя удалить и то, что, возможно, не стоило бы.</p>
+
+<p>Также, иногда пользователи неожиданно для себя сталкиваются с полным исчерпаниям свободного места, что может приводить даже к невозможности нормальной загрузки. В таком случае можно</p>
+
+<!--more-->
+
+<p class='fs'>Не загружается Linux или загрузка Linux зависает, потому что нет свободного места на диске(накопителе — SSD/HDD).</p>
+
+<ol>
+  <li>Загрузиться в режиме восстановления. Для этого во время загрузки зажать Shift и выбрать нужный пункт в меню
+  <li>Выполнить команды очистки из скрипта вручную. 
+    <ul>
+      <li>Перейти по <a href="https://github.com/ComdivByZero/clean-gnu/blob/main/rootclean.sh">ссылке</a>, чтобы увидеть команды.
+      <li>Набрать в терминале команды, перед которыми стоит run(без самой run). На момент записи это
+        <a href='#[0]'>[0]</a>:
+        <pre><code>journalctl --vacuum-size=100M
+apt autoclean
+apt autoremove
+apt clean</code></pre>
+      
+    </ul>
+  <li>Затем перезагрузиться в нормальном режиме, а дальше заняться освобождением в привычном виде.
+</ol>
+
+<br/>
+<a href='#[0]'>[0]</a> При вызове в режиме восстановления sudo не нужен, но и мешать не будет, а при запуске от имени пользователе окажется необходим.
+
+</body>
+</html>
