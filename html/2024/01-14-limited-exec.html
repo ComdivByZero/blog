@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ограничение</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Ограничиваемый запуск программ в GNU/Linux</h2>
+
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFAw43EXHlPgR72X0agr1aO0-WKygmvAoMU4fLED6AnwvYxEVXUOvj7xa02e_UpFib1P3vUc8pAaBQMLlCoEf-oXM7DfHQMqkI7KzIdBG7HOxy6TFv6N0p7hjtdn5niUwrHFGk4Utr5JLX7T316QnobN1HFdvkZdf-PD8JZ3_KGNWBZjemKWAbgRsC8BzZ/s1024/DALL%C2%B7E%202024-01-17%2022.43.03%20-%20A%20haunting%20version%20of%20a%20sick%20penguin%20in%20a%20glass%20box.%20The%20penguin%20appears%20more%20emaciated%20and%20distressed,%20with%20its%20eyes%20wide%20open%20in%20a%20look%20of%20fear.%20It%27.png" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFAw43EXHlPgR72X0agr1aO0-WKygmvAoMU4fLED6AnwvYxEVXUOvj7xa02e_UpFib1P3vUc8pAaBQMLlCoEf-oXM7DfHQMqkI7KzIdBG7HOxy6TFv6N0p7hjtdn5niUwrHFGk4Utr5JLX7T316QnobN1HFdvkZdf-PD8JZ3_KGNWBZjemKWAbgRsC8BzZ/s320/DALL%C2%B7E%202024-01-17%2022.43.03%20-%20A%20haunting%20version%20of%20a%20sick%20penguin%20in%20a%20glass%20box.%20The%20penguin%20appears%20more%20emaciated%20and%20distressed,%20with%20its%20eyes%20wide%20open%20in%20a%20look%20of%20fear.%20It%27.png"/></a></div>
+
+<p>Как известно, работа программ в GNU/Linux основана на предоставлении им избыточных возможностей в оптимистичном ожидании, что они воспользуются ими исключительно во благо. Оперативная память может выдаваться авансом в надежде на то, что удастся вывезти за счёт сброса блоков данных на накопитель. В результате любая программа, пытающаяся выполнить невозможное для данной системы, способна вывести её из строя.</p>
+
+<p>Ситуация нелепа сама по себе, а дополнительной нелепости добавляет и то, что запуск программы с ограничением на выделяемые ресурсы в типичном сценарии использования сам потребляет много ресурсов и требует от пользователя избыточных усилий, из-за чего возможность используется гораздо реже, чем стоило бы.</p>
+
+<!--more-->
+
+<style>pre {background-color:#EEE; overflow:auto;} span.error { color: red; }</style>
+
+<p>Написал <a href="https://github.com/ComdivByZero/lime">небольшой скрипт lime</a> (<b>lim</b>ited <b>e</b>xecution) который позволяет легковесно ограничить вызываемую команду. Вдобавок к ограничению по памяти, осуществляемом через cgroup, через chroot применено ограничение доступа к домашнему каталогу и /tmp.</p>
+
+<pre><code>~/project: lime wc ~/.ssh/id_rsa
+wc: /home/user/.ssh/id_rsa: No such file or directory
+
+~/project: lime 12G gcc <a href="../../2021/01/preprocessor-bomb.html">bomb.c</a>
+gcc: <span class='error'>fatal error</span>: Killed signal terminated program cc1
+compilation terminated.</code></pre>
+
+<p>При включённом ограничении на домашний каталог snap-пакеты не работают. И замеры показывают, что в отношении ресурсов легковесность таких ограничений тоже весьма относительна:</p>
+
+<pre><code>~/project: run() { /usr/bin/time -f '%M KiB %e sec' $*; }
+~/project: run true
+1920 KiB 0.00 sec
+~/project: run lime / true
+5980 KiB 0.07 sec
+~/project: run lime true
+12288 KiB 0.30 seс
+</code></pre>
+
+
+</body>
+</html>
