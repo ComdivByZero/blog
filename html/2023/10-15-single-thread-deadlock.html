@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Блокировка</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Взаимная блокировка в однопоточном языке</h2>
+<style>
+  pre {background-color: #EBEBE7; overflow: auto;}
+  div.block { overflow: auto; margin:0;padding:0;}
+</style>
+
+<div class='block'><div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg352u2v5oewIFNLrRgUw3R1w1Y3wBcCjvBM2Y6NMSqtERVQMapByITTC3YcHdZtw_IkudsooyeFxEflSOZvHYeQuAkArOJazIB-QMCQ2rBRVKXbQQ7S961PLnb-wppC_YWhgGzIPCho0bT0hS22UQMXn4Yq7WdJrMaC53QtJRqXA-Hzkg8q0alcCfeoidz/s1024/DALL%C2%B7E%202023-11-27%2012.52.40%20-%20Two%20robots%20facing%20opposite%20directions,%20entangled%20by%20thin%20wires%20forming%20a%20complicated%20knot%20in%20the%20middle.%20The%20first%20robot%20is%20humanoid%20with%20a%20sleek,%20met.png" style="display: block; padding: 0; margin:0 0 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="200" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg352u2v5oewIFNLrRgUw3R1w1Y3wBcCjvBM2Y6NMSqtERVQMapByITTC3YcHdZtw_IkudsooyeFxEflSOZvHYeQuAkArOJazIB-QMCQ2rBRVKXbQQ7S961PLnb-wppC_YWhgGzIPCho0bT0hS22UQMXn4Yq7WdJrMaC53QtJRqXA-Hzkg8q0alcCfeoidz/s200/DALL%C2%B7E%202023-11-27%2012.52.40%20-%20Two%20robots%20facing%20opposite%20directions,%20entangled%20by%20thin%20wires%20forming%20a%20complicated%20knot%20in%20the%20middle.%20The%20first%20robot%20is%20humanoid%20with%20a%20sleek,%20met.png"/></a></div>
+<p>Если программы работают в многозадачной системе, то с точки зрения возможности возникновения взаимных блокировок, характерных для параллельного программирования, не так уж и важно, написаны ли программы на языках, напрямую поддерживающих многопоточность, или понятийно они строго однопоточны, включая библиотеки. Просто в этом случае взаимную блокировку гораздо легче осуществить не в изолированной программе, а в совокупной вычислительной среде. Например:</p></div>
+
+<!--more-->
+
+<br/>
+<pre><code>MODULE Files;
+
+ IMPORT File := CFiles;
+ <details><summary>PROCEDURE Delay(f: File.File; v: BYTE);</summary> VAR b: ARRAY 1 OF BYTE; i, ignore: INTEGER;
+ BEGIN
+  FOR i := 0 TO 11111 DO
+    b[0] := v;
+    ignore := File.Write(f, b, 0, 1);
+    ignore := ORD(File.Flush(f))
+  END
+ END Delay;</details>
+ PROCEDURE Lock(n: ARRAY OF CHAR; v: BYTE); VAR f: File.File; BEGIN
+  WHILE File.Exist(n, 0) DO ; END;
+
+  f := File.Open(n, 0, "w");
+  IF f # NIL THEN
+    Delay(f, v);
+    File.Close(f)
+  END
+ END Lock;
+ 
+ PROCEDURE Unlock(n: ARRAY OF CHAR); VAR ignore: BOOLEAN; BEGIN
+  ignore := File.Remove(n, 0)
+ END Unlock;
+
+ PROCEDURE Go*(na, nb: ARRAY OF CHAR; v: BYTE); BEGIN
+  Lock(na, v);
+    Lock(nb, v);
+    Unlock(nb);
+  Unlock(na)
+ END Go;
+
+END Files.</code></pre>
+
+<p>В командной оболочке:</p>
+<pre><code>ost to-bin 'Files.Go("b", "a", ORD("B"))' filesBA -m .
+ost to-bin 'Files.Go("a", "b", ORD("A"))' filesAB -m .
+
+./filesAB &amp; ./filesBA
+</code></pre>
+
+</body>
+</html>
