@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Троичная форма</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Алгоритм преобразования числа в троичную симметричную форму</h2>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-FSLgYJv7r58l0Tcd8ujeD8l0L-TjzCvFam9O_US1guhyphenhyphenuq_-7ajjJJkZVmdqy3orwmW0QMcoy2Hq3YtZVmdlmZ0GX0Jxz2aNLoz-ciuuLZ1BD5DM5naqAG3F7DX5xLIJ441D4cdpyz31BHscehWIvMQdvp25R6Jnc357qdLVTMcM49ljaqNW13f0GyAI/s1024/DALL%C2%B7E%202023-11-15%2023.20.39%20-%20A%20traditional%20balance%20scale%20with%20a%20beam%20and%20two%20pans.%20On%20each%20pan,%20there%20are%20triangles%20of%20different%20sizes.%20The%20scene%20is%20set%20in%20a%20neutral,%20plain%20backgr.png" style="display: block; padding: 0 0 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="160" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-FSLgYJv7r58l0Tcd8ujeD8l0L-TjzCvFam9O_US1guhyphenhyphenuq_-7ajjJJkZVmdqy3orwmW0QMcoy2Hq3YtZVmdlmZ0GX0Jxz2aNLoz-ciuuLZ1BD5DM5naqAG3F7DX5xLIJ441D4cdpyz31BHscehWIvMQdvp25R6Jnc357qdLVTMcM49ljaqNW13f0GyAI/s320/DALL%C2%B7E%202023-11-15%2023.20.39%20-%20A%20traditional%20balance%20scale%20with%20a%20beam%20and%20two%20pans.%20On%20each%20pan,%20there%20are%20triangles%20of%20different%20sizes.%20The%20scene%20is%20set%20in%20a%20neutral,%20plain%20backgr.png"/></a></div>
+<p>Во многих местах в интернете алгоритм представления числа в троичной симметричной системе счисления указан не вполне правильно. В этой системе цифра может иметь отрицательное значение, что и приводит к сложности в правке обычного алгоритма, основанного на последовательном делении на основание системы счисления. Постарался восполнить этот пробел.</p>
+<!--more-->
+
+<style>
+  code, pre {
+    font-family: "Ubuntu Mono","Söhne Mono",Monaco,Andale Mono,monospace;
+    font-size: 16px;
+  }
+  pre {
+    background-color: #EFEFEF; color: #222;
+    overflow: auto;
+    padding: 4px;
+  }
+</style>
+
+<p>Главная идея в том, что при получении <b>2</b> в остатке от деления на 3, его необходимо представить как две троичные цифры <b>+1</b>•3¹ <b>-1</b>. <b>-1</b> — это искомая младшая цифра, а <b>+1</b>•3¹ — добавка к исходному числу. Так как для получения следующей цифры  исходное значение предварительно нужно разделить на 3, то правку числа можно провести уже после деления, но, соответственно, уже на 1, а не 3. Таким образом правку можно свести к увеличению частного на остаток, поделенный на 2.</p>
+
+<pre><code>MODULE BalancedTernary; IMPORT Variant;
+
+ PROCEDURE From*(v: INTEGER; VAR str: ARRAY OF CHAR);
+ VAR i, k, t: INTEGER; digits: ARRAY 4 OF CHAR; c: CHAR;
+ BEGIN
+  IF v >= 0 THEN
+    digits := "0+-"
+  ELSE
+    v := -v;
+    digits := "0-+"
+  END;
+
+  i := 0;
+  REPEAT
+    <b>t := v MOD 3;</b>
+    IF Variant.One THEN
+      <b>v := v DIV 3;
+      IF t = 2 THEN INC(v) END</b>
+    ELSE
+      <b>v := v DIV 3 + t DIV 2</b>
+    END;
+
+    str[i] := digits[t];
+    INC(i)
+  UNTIL v = 0;
+
+  str[i] := 0X;
+  DEC(i); k := 0;
+  WHILE i > k DO
+    c := str[k]; str[k] := str[i]; str[i] := c;
+    INC(k); DEC(i)
+  END
+ END From;
+
+END BalancedTernary.</code></pre>
+
+<pre><code>==== Трисим(Вариант) (
+
+ == +Из(ц: Ц; →стр: [×Л]) (
+  л, к, т: Ц.  цифры: [4 × Л].  с: Л.
+
+  ??  ц ≥ 0  (
+    цифры ← "0+-"
+  ::
+    ц ← 0 - ц.
+    цифры ← "0-+"
+  ).
+
+  л ← 0.
+  (↺) (
+    <b>т ← ц |÷| 3.</b>
+    ??  Вариант.Один  (
+      <b>ц ← ц ÷ 3.
+      ??  т = 2  ( ц += 1 )</b>
+    ::
+      <b>ц ← ц ÷ 3 + т ÷ 2</b>
+    ).
+
+    стр[л] ← цифры[т].
+    л += 1
+  ) ДО ц = 0.
+
+  стр[л] ← 00л.
+  л -= 1.  к ← 0.
+  (↺)?  л > к  (
+    стр[л] ↔ стр[к].
+    л -= 1. к += 1
+  )
+ ) Из.
+
+) Трисим.</code></pre>
+<label style="font-size:0.9em;">Экспериментальная лексика<input type="checkbox" onchange="switchE1()"></label>
+
+<p>Код в <a href="https://vostok.oberon.org/sandbox.html?view=23nfuhrg3vmd-ternary">песочнице</a>.</p>
+
+<p>Примечательно, что и ChatGPT испытывает сложности с созданием алгоритма печати. Передача пояснительного абзаца позволяет ему создать правильный код.</p>
+
+<details><summary>Обновление 06.09.2023</summary>Теперь ChatGPT версий 3.5 и 4 справляется с созданием алгоритма без подсказок, хотя и по-прежнему утверждает, что обучен на данных до 2021 года.</details>
+
+<script>
+  var switchE1On = false;
+  function switchE1() {
+    var codes = document.getElementsByTagName("pre");
+    if (switchE1On) {
+      codes[0].style.display = "";
+      codes[1].style.display = "none";
+    } else {
+      codes[1].style.display = "";
+      codes[0].style.display = "none";
+    }
+    switchE1On = !switchE1On;
+  }
+  switchE1();switchE1();
+</script>
+</body>
+</html>
