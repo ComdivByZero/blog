@@ -10,11 +10,11 @@
 </head>
 
 <body>
-<h2>Финализированный кольцевой список на Java + концепция</h2>
+<h2>Неизменяемый кольцевой список на Java + концепция</h2>
 
 <div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjLDDPrJYs1aeNpUIMpYhgIC1SZA-GxgMp_FnLEbOah7ZDSCr4ua4lCb9z9dF5m_VTKWl8U76U-4hJ7MuTnOpuBa8PUfIJIsgyUMhiiv4xcow8klXb2wzJKOP8vHsNBRNU1JaMvp-2CVzjXPulN1t5WTAstrphtAemYpt9tiZIcN2nI_ssrRAKt9RBpWrEt/s1792/DALL%C2%B7E%202025-01-20%2019.48.38%20-%20A%20surreal%20representation%20of%20a%20closed%20chain%20depicted%20as%20a%20circular,%20interconnected%20loop.%20The%20chain%20links%20are%20glowing%20metallic%20with%20intricate%20designs,%20c.webp" style="display: block; padding: 1em 0; text-align: center; "><img alt="" border="0" width="600" data-original-height="1024" data-original-width="1792" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjLDDPrJYs1aeNpUIMpYhgIC1SZA-GxgMp_FnLEbOah7ZDSCr4ua4lCb9z9dF5m_VTKWl8U76U-4hJ7MuTnOpuBa8PUfIJIsgyUMhiiv4xcow8klXb2wzJKOP8vHsNBRNU1JaMvp-2CVzjXPulN1t5WTAstrphtAemYpt9tiZIcN2nI_ssrRAKt9RBpWrEt/s600/DALL%C2%B7E%202025-01-20%2019.48.38%20-%20A%20surreal%20representation%20of%20a%20closed%20chain%20depicted%20as%20a%20circular,%20interconnected%20loop.%20The%20chain%20links%20are%20glowing%20metallic%20with%20intricate%20designs,%20c.webp"/></a></div>
 
-<p>Обратная связь представляет собой определённую сложность для финализированного списка в Java, ведь все элементы должны косвенно ссылаться друг на друга, а установка финализированного значения возможна только внутри конструктора. Это препятствие можно преодолеть с помощью <em>простого советского ...</em> <!--more--> рекурсивного конструктора.</p>
+<p>Обратная связь закольцованности представляет собой определённую сложность для неизменяемых структур в Java, ведь все элементы должны косвенно ссылаться друг на друга, а установка неизменяемого значения возможна только внутри конструктора. Это препятствие можно преодолеть с помощью <em>простого советского ...</em> <!--more--> рекурсивного конструктора.</p>
 
 
 
@@ -52,7 +52,7 @@
 Node&lt;T> list = new Node(Arrays.asList(1, 2, 3));
 </code></pre>
 
-<p>Более удачно спроектированный язык должен позволять обходиться без рекурсии. Впрочем, слово «удачно» здесь может быть спорным, так как такой язык, вероятно, не может не быть сложней понятийно. Например, так:</p>
+<p>Более удачно спроектированный язык должен позволять обходиться без рекурсии, поскольку для общего случая посроения графов этот способ плох. Впрочем, слово «удачно» здесь может быть не совсем однозначным, так как такой язык, вероятно, не может не быть сложней понятийно. Например, так:</p>
 
 <pre><code>public final class Node&lt;T> {
   fixed T value;
@@ -83,8 +83,9 @@ Node&lt;T> list = new Node(Arrays.asList(1, 2, 3));
 fixed Node&lt;T> list = Node.create(Arrays.asList(1, 2, 3));
 </code></pre>
 
-<p>Характеристики <code>fixed</code>, <code>isolated</code> могли бы отслеживаться в неявном виде за счёт дополнительного усложнения транслятора, и тогда бы для программиста это могло выглядеть как просто вопрос написания правильного кода. Проблема в том, что просто, да не просто, потому что в случае ошибки, сложно было бы объяснить, как эти неявные модификаторы взаимодействуют по цепи причин и следствий, и приводят к такой диагностике.</p>
+<p>Характеристика <code>fixed</code> означает, что значение по ссылке неизменно, и все ссылки в этом значения тоже <code>fixed</code>. Характеристика <code>isolated</code> обозначает изолированную группу ссылок на изменяемые значение, на которые не ссылается ничто извне этой группы. Благодаря этому всю группу можно будет преобразовать в <code>fixed</code>, когда её формирование будет завершено.</p>
 
+<p>Характеристика <code>isolated</code> могла бы отслеживаться в неявном виде за счёт дополнительного усложнения транслятора, и тогда бы для программиста это могло выглядеть как просто вопрос написания правильного кода. Проблема в том, что просто, да не просто, потому что в случае ошибки, сложно было бы объяснить, как неявная характеристика взаимодействует по цепи причин и следствий, и приводит к такой диагностике.</p>
 
 </body>
 </html>
