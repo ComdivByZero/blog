@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jar she-bang</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Исполняемый Jar-файл с she-bang</h2>
+
+<style>pre, code {background-color:#F8F8F8;overflow:auto;white-space: pre;}</style>
+
+<p>Это стандартная особенность zip формата, позволяющего произвольные данные перед началом архива.</p>
+
+<pre><code>{ printf '#!/bin/sh\nexec java -jar "$0" "$@"\n'; cat app.jar; } > app
+chmod +x app</code></pre>
+
+<p>Разумеется, Jar должен содержать класс с <code>public static void main(String[] args)</code> и соответствующий manifest. Без manifest можно обойтись, если заменить команду <code>java -jar "$0" "$@"</code> на <code>java -cp "$0" my.prog.Main "$@"</code></p>
+
+</body>
+</html>
