@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Псевдоязык</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Структурное программирование не про запрет GOTO</h2>
+
+<style>code, pre { background-color: #EAEAEA; overflow: auto; } p {hyphens: auto; text-align:justify;} 
+.sep1 { display:none; } </style>
+
+
+<div class="separator sep0" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjnEL5fOFREPBRMwNYLuN1dsKk91JhQ9Q6QKNBDi001nLQ6qaTvTySLSZ3YsfQ9wFqftygP_KJelLj_cRg2LcYGyA3VOpmhoIvjVj8nPAzn59wSeFcyc3Xox081TBsUP3WwPeeAYnH_H5c2E_ZpjY7n5BS_aa7OP5RPWMrCMtJWz-VsHklx4VrJnXn9jQaA/s1024/ChatGPT%20Image%20Oct%208,%202025,%2012_54_08%20AM.png" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="400" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjnEL5fOFREPBRMwNYLuN1dsKk91JhQ9Q6QKNBDi001nLQ6qaTvTySLSZ3YsfQ9wFqftygP_KJelLj_cRg2LcYGyA3VOpmhoIvjVj8nPAzn59wSeFcyc3Xox081TBsUP3WwPeeAYnH_H5c2E_ZpjY7n5BS_aa7OP5RPWMrCMtJWz-VsHklx4VrJnXn9jQaA/s400/ChatGPT%20Image%20Oct%208,%202025,%2012_54_08%20AM.png"/></a></div>
+
+<div class="separator sep1" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjwMtzfoGlRgxtNyplxjmeQ80GsRoJXoahWKiQY4s4CPSn89G7GbRjkb1nA5_anqyTPU4cYv9y6t2bqZTk18kb2wI99bPtK4_OoaNUEWX4L3TPOIN-31Ahsg0c_gldXKriou5AWgDb18G2W0KItGsI4v7qg_1AxaMkbAmt7lu53ECpRxYErcSn3TL7Xw6AO/s872/DijkstraLookAtYou.png" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="400" data-original-height="864" data-original-width="872" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjwMtzfoGlRgxtNyplxjmeQ80GsRoJXoahWKiQY4s4CPSn89G7GbRjkb1nA5_anqyTPU4cYv9y6t2bqZTk18kb2wI99bPtK4_OoaNUEWX4L3TPOIN-31Ahsg0c_gldXKriou5AWgDb18G2W0KItGsI4v7qg_1AxaMkbAmt7lu53ECpRxYErcSn3TL7Xw6AO/s400/DijkstraLookAtYou.png"/></a></div>
+
+<p>
+  Теорема Бёма — Якопини, которую часто называют теоремой про структурное программирование, на самом деле доказывает прямо противоположное тому, что ей приписывается. Она не доказывает достаточности структурного программирования, а наоборот, доказывает, что с помощью структурных операторов управления можно идеально воспроизводить любой неструктурный код, но сохраняя таким образом и все его отрицательные для человека свойства. Более подходящим названием для теоремы было бы «теорема про неструктурное программирование в структурных операторах».
+</p>
+
+<p>Рассмотрим дикий бессмысленный пример неструктурного кода:</p>
+<pre><code>L0: Call0; IF Pred0 GOTO L2;
+L1: Call1; IF Pred1 GOTO L3;
+L2: Call2; IF Pred2 GOTO L3 ELSE GOTO L0;
+L3: Call3; IF Pred3 GOTO L4 ELSE GOTO L1;
+</code></pre>
+
+<!--more-->
+
+<style>.sep0 {display:none;} .sep1 { display:block; } </style>
+
+<p>С помощью цикла и ветвления вся неструктурная дикость и бесмысленность легко перекладывается на структурный язык близко к оригиналу. Это первая причина того, что структурность не про запрет GOTO.</p>
+<pre><code>L := 0;
+REPEAT 
+  CASE L OF
+    0: Call0; IF Pred0 THEN L := 2 ELSE L := 1 END
+  | 1: Call1; IF Pred1 THEN L := 3 ELSE L := 2 END
+  | 2: Call2; IF Pred2 THEN L := 3 ELSE L := 0 END
+  | 3: Call3; IF Pred3 THEN L := 4 ELSE L := 1 END
+  END
+UNTIL L = 4;
+</code></pre>
+
+<p>
+Поэкспериментировать c кодом можно в
+<a href="https://vostok.oberon.org/sandbox.html?view=1q1oth078ms5-weird_unstructured">песочнице</a>.
+</p>
+
+<p>В чуть более сложном примере может быть комбинация структурных и неструктурных выходов:</p>
+
+<pre><code>PROCEDURE Search(a: ARRAY OF INTEGER; val: INTEGER): INTEGER;
+BEGIN
+  i := 0;
+  WHILE i &lt; LEN(a) DO
+    IF a[i] = val THEN
+      RETURN i
+    END;
+    INC(i)
+  END;
+  RETURN -1
+END Search;</code></pre>
+
+<p>В таком случае сначала лучше заменить циклы и ветвления на GOTO:</p>
+
+<pre><code>PROCEDURE Search(a: ARRAY OF INTEGER; val: INTEGER): INTEGER;
+VAR ret: INTEGER;
+BEGIN
+  i := 0;
+  Wh:IF ~(i &lt; LEN(a))      GOTO EndWh;
+    IF ~(a[i] = val)       GOTO EndIf;
+      ret := i; GOTO Return
+    EndIf:
+    INC(i);
+  GOTO Wh; EndWh:
+  ret := -1; Return: RETURN ret
+END Search;</code></pre>
+
+<p>А затем повторить преобразование в цикл с CASE:</p>
+
+<pre><code>PROCEDURE Step(): INTEGER; BEGIN INC(L) RETURN L - 1 END Step;
+PROCEDURE Goto(l: INTEGER); BEGIN L := l END Goto;
+PROCEDURE Wh(c: BOOLEAN):BOOLEAN; BEGIN DEC(L); RETURN ~c END Wh;
+
+PROCEDURE Search(a: ARRAY OF INTEGER; val: INTEGER): INTEGER;
+CONST Begin = 0; EndIf = 1; EndWh = 2; Return = 3;
+VAR ret: INTEGER;
+BEGIN L := 0;
+  i := 0;
+  REPEAT CASE Step() OF
+| Begin:
+  IF Wh(i &lt; LEN(a))  THEN Goto(EndWh) ELSE
+    IF ~(a[i] = val) THEN Goto(EndIf) ELSE
+      ret := i; Goto(Return)          END END
+|   EndIf:
+    INC(i)
+| EndWh:
+  ret := -1;
+  END UNTIL L = Return; RETURN ret
+END Search;</code></pre>
+
+<p> Выглядит странновато, но этот код, используя только операторы с единственным выходом, тем не менее точно соответствует исходному примеру с выходом из середины функции. Структурное программирование, естественно, не про умение выполнять такие упражнения, а про <b>аккуратное</b> проектирование более ограниченных, но достаточных потоков управления. И хотя потоки и ограничены композицией 3-х типов переходов, которые можно было бы назвать структурными, это нельзя считать достаточным условием. Более того, оно не является и необходимым условием, потому что структурные операторы можно безупречно воспроизводить с помощью одних только условных и безусловных переходов, то есть, тех самых GOTO.
+</p>
+
+<p>Структурный вариант поиска мог бы выглядеть так:</p>
+
+<pre><code>PROCEDURE Search(a: ARRAY OF INTEGER; val: INTEGER): INTEGER;
+VAR i: INTEGER;
+BEGIN
+  i := 0;
+  WHILE (i &lt; LEN(a)) &amp; (a[i] # val) DO
+    INC(i)
+  END;
+  IF ~(i &lt; LEN(a)) THEN
+    i := -1
+  END
+  RETURN i
+END Search;</code></pre>
+
+<p>Если бы в языке не было бы ни циклов, ни составных ветвлений, то структуру всё равно можно было бы 
+сохранить:</p>
+<pre><code>PROCEDURE Search(a: ARRAY OF INTEGER; val: INTEGER): INTEGER;
+VAR i: INTEGER;
+BEGIN
+  i := 0;
+  Wh:IF ~((i &lt; LEN(a)) &amp; (a[i] # val)) GOTO EndWh;
+    INC(i)
+  GOTO Wh; EndWh:
+  IF i &lt; LEN(a) GOTO EndIf;
+    i := -1
+  EndIf:
+  RETURN i
+END Search;</code></pre>
+
+<p>Следовательно, сам GOTO не противоречит идее структурного программирования, он всего лишь ей не способствует. И это вторая причина того, что структурность не про запрет GOTO.
+</p>
+
+<p>Всё дело в коварстве алгоритмической полноты — структурность легко воспроизводить с помощью «неструктурных» переходов, а неструктурность с помощью «структурных». Так как следить за соблюдением формалистических правил гораздо легче, чем следить за соблюдением более сложных понятий, когда они выражаются в других терминах, то и дальше понятие структурности будуть путать с запретом GOTO. Но мы-то этого делать не будем?
+</p>
+
+<p>Структурное программирование естественным образом возникает при пошаговом уточнении кода, ведь любой неструктурный переход за пределы конструкции не уточняет смысл конструкции, а меняет его. А если возникшие потребности не вписываются в исходную концепцию, куда лучше не взламывать структуру, а явно изменить соответствующим образом её описание.</p>
+
+</body>
+</html>
