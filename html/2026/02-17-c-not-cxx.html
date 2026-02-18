@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>C и C++</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Детектор языков C и C++</h2>
+
+<p>C++, в целом, старается быть надмножеством языка C, но всё же им не является. Вот пример проявляемых различий:</p>
+
+<!--more-->
+
+<style>
+  pre, code {
+    font-family: "Ubuntu Mono","Söhne Mono",Monaco,Andale Mono,monospace;
+    background-color:#F8F8F8; 
+    overflow-x: auto; 
+    padding: 2px; 
+    color: #111;
+  }
+</style>
+
+
+<pre><code>c-not-cxx: cat main.c
+#include &lt;stdio.h>
+
+int main(int argc, char* argv[]) {
+  const int c = 0;
+  ++*(int *)&c;
+  if (c != *&amp;c) {
+    printf("C++ is crap\n");
+  } else {
+    printf("C is rubbish\n");
+  }
+  return 0;
+}
+c-not-cxx: g++ main.c -o main -Wall -fsanitize=undefined &amp;&amp; ./main
+C++ is crap
+c-not-cxx: gcc main.c -o main -Wall -fsanitize=undefined &amp;&amp; ./main
+C is rubbish
+</code></pre>
+
+</body>
+</html>
