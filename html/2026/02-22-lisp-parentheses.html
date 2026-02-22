@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Скобки</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Миф о мифе о большом количестве скобочек в Lisp</h2>
+
+<p>Когда мне в очередной раз рассказывают про то, что в Lisp слишком много круглых скобочек — это миф, то я представляю себе приблизительно это:</p>
+
+<!--more-->
+
+<pre><code>(: fact (Integer -> Integer))
+(define (fact n)
+  (if (&lt;= n 1)
+      1
+      (* n (fact (- n 1)))))</code></pre>
+
+<pre><code>func fact(int n) int {
+  if n &lt;= 1 {
+    return 1
+  } else {
+    return n * fact(n - 1)
+  }
+}</code></pre>
+
+<pre><code>int fact(int n) {
+  if (n &lt;= 1)
+    return 1;
+  else
+    return n * fact(n - 1);
+}</code></pre>
+
+<p>Ещё более впечатляющее сравнение происходит с языками, испльзующими алголоподобную лексику.</p>
+
+<pre><code>PROCEDURE fact(n: INTEGER): INTEGER;
+  IF n &lt;= 1 THEN
+    n := 1
+  ELSE
+    n := n * fact(n - 1)
+  END
+RETURN
+  n
+END fact;</code></pre>
+
+<p>Первый пример кода написан Racket с указанием статических типов, и на нём виден способ экономии скобочек — просто не указывать типы, как это делается во многих диалектах Lisp. Так проще создавать примеры, где количество скобочек сопоставимо. Также, если не указывать, что в других языках скобочки 3-4 видов и они соотнесены с разными смыслами, что упрощает их восприятие, то снова можно преуменьшить проблему восприятия кода на Lisp.</p>
+
+</body>
+</html>
