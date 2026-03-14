@@ -11,8 +11,7 @@
 
 <body><h2>Структурное программирование не про запрет GOTO</h2>
 
-<style>code, pre { background-color: #EAEAEA; overflow: auto; } p {hyphens: auto; text-align:justify;} 
-.sep1 { display:none; } </style>
+<style>.sep1 { display:none; } </style>
 
 
 <div class="separator sep0" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjnEL5fOFREPBRMwNYLuN1dsKk91JhQ9Q6QKNBDi001nLQ6qaTvTySLSZ3YsfQ9wFqftygP_KJelLj_cRg2LcYGyA3VOpmhoIvjVj8nPAzn59wSeFcyc3Xox081TBsUP3WwPeeAYnH_H5c2E_ZpjY7n5BS_aa7OP5RPWMrCMtJWz-VsHklx4VrJnXn9jQaA/s1024/ChatGPT%20Image%20Oct%208,%202025,%2012_54_08%20AM.png" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="400" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjnEL5fOFREPBRMwNYLuN1dsKk91JhQ9Q6QKNBDi001nLQ6qaTvTySLSZ3YsfQ9wFqftygP_KJelLj_cRg2LcYGyA3VOpmhoIvjVj8nPAzn59wSeFcyc3Xox081TBsUP3WwPeeAYnH_H5c2E_ZpjY7n5BS_aa7OP5RPWMrCMtJWz-VsHklx4VrJnXn9jQaA/s400/ChatGPT%20Image%20Oct%208,%202025,%2012_54_08%20AM.png"/></a></div>
@@ -51,7 +50,7 @@ UNTIL L = 4;
 <a href="https://vostok.oberon.org/sandbox.html?view=1q1oth078ms5-weird_unstructured">песочнице</a>.
 </p>
 
-<p>В чуть более сложном примере может быть комбинация структурных и неструктурных выходов:</p>
+<p>В чуть более сложном примере может быть сочетание структурных и неструктурных выходов:</p>
 
 <pre><code>PROCEDURE Search(a: ARRAY OF INTEGER; val: INTEGER): INTEGER;
 BEGIN
@@ -103,7 +102,7 @@ BEGIN L := 0;
   END UNTIL L = Return; RETURN ret
 END Search;</code></pre>
 
-<p> Выглядит странновато, но этот код, используя только операторы с единственным выходом, тем не менее точно соответствует исходному примеру с выходом из середины функции. Структурное программирование, естественно, не про умение выполнять такие упражнения, а про <b>аккуратное</b> проектирование более ограниченных, но достаточных потоков управления. И хотя потоки и ограничены композицией 3-х типов переходов, которые можно было бы назвать структурными, это нельзя считать достаточным условием. Более того, оно не является и необходимым условием, потому что структурные операторы можно безупречно воспроизводить с помощью одних только условных и безусловных переходов, то есть, тех самых GOTO.
+<p> Выглядит странновато, но этот код, используя только операторы с единственным выходом, тем не менее точно соответствует исходному примеру с выходом из середины функции. Структурное программирование, естественно, не про умение выполнять такие упражнения, а про <b>аккуратное</b> проектирование более ограниченных, но достаточных потоков управления. И хотя потоки и ограничены сочетанием 3-х типов переходов, которые можно было бы назвать структурными, это нельзя считать достаточным условием. Более того, оно не является и необходимым условием, потому что структурные операторы можно безупречно воспроизводить с помощью одних только условных и безусловных переходов, то есть, тех самых GOTO.
 </p>
 
 <p>Структурный вариант поиска мог бы выглядеть так:</p>
@@ -127,19 +126,46 @@ END Search;</code></pre>
 VAR i: INTEGER;
 BEGIN
   i := 0;
-  Wh:IF ~((i &lt; LEN(a)) &amp; (a[i] # val)) GOTO EndWh;
+  Wh:IF (i &lt; LEN(a)) &amp; (a[i] # val) GOTO Do; GOTO EndWh; Do:
     INC(i)
   GOTO Wh; EndWh:
-  IF i &lt; LEN(a) GOTO EndIf;
+  IF ~(i &lt; LEN(a)) GOTO Then; Goto EndIf; Then:
     i := -1
   EndIf:
   RETURN i
 END Search;</code></pre>
 
+<details><summary>С препроцессором с блочными макросами</summary>
+<pre><code>MACRO
+  'While' Condition 'Do' Statements 'End' = (
+    GOTO Wh; Do:
+      Statements
+    Wh:IF Condition GOTO Do;
+  );
+  'If' Condition 'Then' Statements 'End' = (
+    IF ~(Condition) GOTO Endif;
+      Statements
+    EndIf:;
+  );
+
+PROCEDURE Search(a: ARRAY OF INTEGER; val: INTEGER): INTEGER;
+VAR i: INTEGER;
+BEGIN
+  i := 0;
+  While (i &lt; LEN(a)) &amp; (a[i] # val) Do
+    INC(i)
+  End;
+  If ~(i &lt; LEN(a)) Then
+    i := -1
+  End
+  RETURN i
+END Search;
+</code></pre></details>
+
 <p>Следовательно, сам GOTO не противоречит идее структурного программирования, он всего лишь ей не способствует. И это вторая причина того, что структурность не про запрет GOTO.
 </p>
 
-<p>Всё дело в коварстве алгоритмической полноты — структурность легко воспроизводить с помощью «неструктурных» переходов, а неструктурность с помощью «структурных». Так как следить за соблюдением формалистических правил гораздо легче, чем следить за соблюдением более сложных понятий, когда они выражаются в других терминах, то и дальше понятие структурности будуть путать с запретом GOTO. Но мы-то этого делать не будем?
+<p>Всё дело в коварстве алгоритмической полноты — структурность легко воспроизводить с помощью «неструктурных» операторов, а неструктурность с помощью структурных. Так как следить за соблюдением формалистических правил гораздо легче, чем следить за соблюдением более сложных понятий, когда они выражаются в других терминах, то и дальше понятие структурности будуть путать с запретом GOTO. Но мы-то этого делать не будем?
 </p>
 
 <p>Структурное программирование естественным образом возникает при пошаговом уточнении кода, ведь любой неструктурный переход за пределы конструкции не уточняет смысл конструкции, а меняет его. А если возникшие потребности не вписываются в исходную концепцию, куда лучше не взламывать структуру, а явно изменить соответствующим образом её описание.</p>
