@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Разбор числа</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Перевод текстовой формы числа в машинную</h2>
+<style>
+  pre, code { background-color: #F0F0F0; }
+  code>em   { background-color: #F8F8F8; }
+  code      { white-space: pre; }
+  td        { padding-right: 10px; }
+  .MJX-TEX  { font-size:130%; }
+</style>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<p>Математическое определение значения числа, записанного в позиционной системе счисления:</p>
+
+$$ Ч = \sum_{р=0}^{к} Ц_р·О^{р} $$
+
+<!--more-->
+
+<table>
+  <tr><td>Ч</td><td>— значение числа</td></tr>
+  <tr><td>р</td><td>— разряд цифры</td></tr>
+  <tr><td>к</td><td>— конечный, старший разряд в числе</td></tr>
+  <tr><td>$$ Ц_р $$</td><td>— Значение цифры в соответствующем разряде</td></tr>
+  <tr><td>О</td><td>— основание системы счисления (10)</td></tr>
+</table>
+
+<p>Если считать не по разряду цифр, а их положению в тексте начиная слева, то с учётом того, что
+в традиционной записи старшие разряды записывают раньше младших, формула примет вид:</p>
+
+$$ Ч = \sum_{п=0}^{к} Ц_р·О^{к-п} $$
+
+<p>От прямого использования возведения в степень можно избавиться с помощью эквивалентной рекурентной формулы:</p>
+
+$$ З_0 = Ц_0 $$
+$$ З_п = Ц_{п-1}·О + Ц_п $$
+$$ Ч = З_к $$
+
+<p>В коде разбора текстового представления числа, естественно, нужно учитывать возможность неправильного ввода, как и возможность переполнения целевого диапазона. Черновую версию алгоритма можно записать так:</p>
+
+<pre><code><details><summary><em></em></summary><em>Получи начальную литеру</em>;
+IF <em>текущая литера не цифра</em> THEN
+  <em>ошибка - не число на входе</em>
+ELSE</details>  val := <em>численное значение цифры</em>;
+  <em>Следующая литера</em>;
+  WHILE <em>литера является цифрой</em> 
+     &amp; <em>цифру можно включить в значение без переполнения</em> 
+  DO
+    <em>Присоедини к</em> val <em>численное значение цифры</em>;
+    <em>Следующая литера</em>
+  END;
+<details><summary><em></em></summary>  IF <em>текущая литера является цифрой</em> THEN
+    <em>ошибка - переполнение целевого диапазона, число в строке слишком большое</em>
+  END
+END</details></code></pre>
+
+<p>Код</p>
+<details><summary>Для 10-ричной системы счисления</summary>
+<pre><code>CONST Radix = 10;
+  
+PROCEDURE ValDigit(c: CHAR; VAR val: INTEGER): BOOLEAN;
+BEGIN
+ IF ("0" &lt;= c) &amp; (c &lt;= "9") THEN
+   val := ORD(c) - ORD("0")
+ ELSE
+   val := -1
+ END
+RETURN
+ val >= 0
+END ValDigit;
+</code></pre>
+</details>
+
+<details><summary>Для 16-ричной системы счисления</summary>
+<pre><code>CONST Radix = 10H;
+  
+PROCEDURE ValDigit(c: CHAR; VAR val: INTEGER): BOOLEAN;
+BEGIN
+ IF ("0" &lt;= c) &amp; (c &lt;= "9") THEN
+   val := ORD(c) - ORD("0")
+ ELSIF ("A" &lt;= c) &amp; (c &lt;= "F") THEN
+   val := 10 + ORD(c) - ORD("A")
+ ELSEкорр
+   val := -1
+ END
+RETURN
+ val >= 0
+END ValDigit;
+</code></pre>
+</details>
+
+<pre><code>PROCEDURE Parse(s: ARRAY OF CHAR; VAR i: INTEGER;
+                VAR val: INTEGER): INTEGER;
+VAR d, mark: INTEGER;
+BEGIN
+ IF ~ValDigit(s[i], val) THEN
+   mark := ErrNoDigits
+ ELSE
+   INC(i);
+   WHILE ValDigit(s[i], d) &amp; (val &lt;= (Max - d) DIV Radix) DO
+     val := val * Radix + d;
+     INC(i)
+   END;
+   IF ValDigit(s[i], d) THEN mark := ErrTooLarge ELSE mark := Ok END
+ END
+RETURN mark
+END Parse
+</code></pre>
+
+<p>Проверка возможного переполнения строится на сравнении с границей, 
+  полученной обратными вычислениями от верхней границы INTEGER.</p>
+<pre><code>    val &lt;= (Max - d) DIV Radix</code></pre>
+<p>
+  Она проста, но довольно ресурсоёмка, особенно учитывая, что количество
+  вместимых цифр известно, и только последняя из них может привести к переполнению. 
+  Следующая двухуровненвая проверка
+  позволяет в большинстве случаев обойтись одним сравнением с константой.</p>
+<pre><code>   (val &lt; Max DIV Radix)
+OR (val = Max DIV Radix) &amp; (d &lt;= Max MOD Radix)
+</code></pre>
+
+<p>Так как алгоритм не допускает переполнения при вычислениях, он подходит для языков программирования,
+в которых арифметическое переполнение является прямой ошибкой или его поведение не определено.</p>
+
+<p>При разборе числа со знаком нужно учитывать, что в большинстве языков программирования используют весь
+  диапазон вместимых чисел, а в повсеместно используемой системе дополнительного кода 
+  для кодирования отрицательных чисел, <code>Min = -Max - 1</code>.
+  Чтобы не учитывать это особое значение при проверке на переполнение, можно производить вычисления 
+  сразу в более ёмком отрицательном диапазоне, а для положительных чисел поправлять значение в конце.
+</p>
+
+
+<pre><code><details><summary>PROCEDURE InRange(pre, digit: INTEGER): BOOLEAN;</summary>  CONST Last = (-Radix - Min) MOD Radix;
+        Cut  = ( Last  + Min) DIV Radix;
+  BEGIN  ASSERT(pre &lt;= 0)
+  RETURN
+     (pre > Cut)
+  OR (pre = Cut) &amp; (digit &lt;= Last)
+  END InRange;</details>
+PROCEDURE Parse(s: ARRAY OF CHAR; VAR ofs: INTEGER;
+                VAR val: INTEGER): INTEGER;
+VAR d, mark, i: INTEGER; neg: BOOLEAN;
+BEGIN
+ i := ofs;
+ neg := s[i] = "-";
+ IF neg OR (s[i] = "+") THEN INC(i) END;
+ 
+ IF ~ValDigit(s[i], d) THEN
+   mark := ErrNoDigits
+ ELSE
+   val := -d;
+   INC(i);
+   WHILE ValDigit(s[i], d) &amp; InRange(val, d) DO
+     val := val * Radix - d;
+     INC(i)
+   END;
+   mark := Ok;
+   IF ValDigit(s[i], d)  OR  ~neg &amp; (val &lt; -Max) THEN
+     mark := ErrTooLarge
+   ELSIF ~neg THEN
+     val := -val
+   END
+ END;
+ ofs := i
+RETURN mark
+END Parse
+</code></pre>
+
+<p>Этот код правилен и для систем, в которых <code>Min = -Max</code></p>
+
+</body>
+</html>

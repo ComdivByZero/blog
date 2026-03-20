@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Расширенная раскладка</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Дополнительные символы в украинской раскладке</h2>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEijiamNm0fOftZpFhhK0PWSuYOR82p1D0r7JA8T28i4qs0ShyphenhyphenN9Llfg0qYQE-gGYMY1zRWZ1KRkL9ZDx3hF0pCM0yPqdM1KrarVktbvBEqJ99NzPIp2X5uZKzMn6wC7s84QxzpLWbDOKisUQi2NiKIUcevpY6bbOncyB3Dy70fSk99wOBrnf6q7eLHMakAg/s1024/DALL%C2%B7E%202023-11-30%2020.16.34%20-%20An%20intricately%20designed,%20small%20wooden%20box%20with%20an%20open%20lid,%20from%20which%20an%20assortment%20of%20symbols%20are%20spilling%20out%20onto%20a%20dark%20wooden%20table.%20The%20symbols.png" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="320" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEijiamNm0fOftZpFhhK0PWSuYOR82p1D0r7JA8T28i4qs0ShyphenhyphenN9Llfg0qYQE-gGYMY1zRWZ1KRkL9ZDx3hF0pCM0yPqdM1KrarVktbvBEqJ99NzPIp2X5uZKzMn6wC7s84QxzpLWbDOKisUQi2NiKIUcevpY6bbOncyB3Dy70fSk99wOBrnf6q7eLHMakAg/s320/DALL%C2%B7E%202023-11-30%2020.16.34%20-%20An%20intricately%20designed,%20small%20wooden%20box%20with%20an%20open%20lid,%20from%20which%20an%20assortment%20of%20symbols%20are%20spilling%20out%20onto%20a%20dark%20wooden%20table.%20The%20symbols.png"/></a></div>
+<p>Как известно, типичная русская раскладка по дополнительным символам выглядит обеднённо в сравнении с английской. Не хватает <code>@ # ^ &amp; { } [ ] &lt; &gt; ʼ ~ |</code>, что составляет проблему при наборе некоторых текстов, например в программировании. Украинская раскладка, на первый взгляд, кажется такой же скромной - в ней есть ', но недостаёт \ / на основном блоке. Но это только на первый взгляд.</p>
+
+<!--more-->
+
+<style>p code {font-size:1.3em;}</style>
+
+<p>В GNU/Linux системах и новых версиях Windows стандартной украинской раскладкой является расширенная Unicode-версия, позволяющая не только вводить недостающие символы, но и некоторых другие Unicode-символы, не входящие и в английскую раскладку. Дополнительные символы вводятся в комбинации с клавишей альтернативных символов. В Ubuntu по умолчанию эта клавиша выключена, и для того чтобы её включить нужно зайти в </p>
+<p>Параметры системы -> Ввод текста -> Параметры клавиатуры</p>
+<p>где доступна эта опция. На мой взгляд удобно назначить правый Alt (Alt Gr). С ней станут доступны ударе́ние и знаки:</p>
+
+<p><code>' ¹ ² ’ § ₴ $ € ° &lt; &gt; • [ ] { } — ≠ ± ј џ ў ® ё ы э ъ њ љ ђ ћ © ™ « » „ “ / … \ |</code></p>
+
+<p><em>Умєстно, сеја разложенја клавиатуры довољно и дља печетарства на 
+  <a href='https://isv.miraheze.org/wiki/Med%C5%BEuslovjansky_jezyk'>меджуславянском језыку</a>
+  в кириличскому варианти.</em></p>
+
+<h3 id='ext-rus'>Расширенная русская раскладка</h3>
+<p>Для своего удобства заменил подраскладку ua(homophonic) на вариацию юникод-версии, где поменял местами русские и украинские буквы и добавил некоторые недостающие символы, таким образом получив русскую раскладку с лёгким вводом украинских и белорусских букв и дополнительных литер, включая те, что нужны в программировании. Это можно выполнить скриптом, редактирующим системный файл. Раскладка в системе будет доступна под названием «Ukranian (homophonic)». Более нормального способа сходу не нашёл.</p>
+
+<pre><code>#!/bin/sh
+FP="/usr/share/X11/xkb/symbols/ua"
+
+TF=$(mktemp)
+
+cat &lt;&lt;EOF > "$TF"
+xkb_symbols "homophonic" {«»''"’'
+
+    include "ua(unicode)"
+
+    name[Group1]= "Ukrainian (ru)";
+
+    key &lt;AE01>  {[               1,          exclam,    onesuperior,             notsign ]};
+    key &lt;AE03>  {[               3,      numerosign,        section,          numbersign ]};
+    key &lt;AE05>  {[               5,         percent,         degree,               U20B4 ]};
+    key &lt;AE06>  {[               6,           colon,           less,               U2264 ]};
+    key &lt;AE07>  {[               7,        question,        greater,               U2265 ]};
+    key &lt;AE08>  {[               8,        asterisk, enfilledcircbullet,     asciicircum ]};
+
+    key &lt;AD07>  {[    Cyrillic_ghe,     Cyrillic_GHE,      ampersand                  ]};
+    key &lt;AD12>  {[Cyrillic_hardsign,Cyrillic_HARDSIGN,   Ukrainian_yi,   Ukrainian_YI ]};
+
+    key &lt;AC01>  {[     Cyrillic_ef,     Cyrillic_EF,          U0040                   ]};
+    key &lt;AC02>  {[   Cyrillic_yeru,   Cyrillic_YERU,    Ukrainian_i,      Ukrainian_I ]};
+    key &lt;AC10>  {[    Cyrillic_zhe,    Cyrillic_ZHE,          U0461,           U0460  ]}; // Ѡ
+    key &lt;AC11>  {[      Cyrillic_e,      Cyrillic_E,    Ukrainian_ie,     Ukrainian_IE ]};
+    key &lt;AC12>  {[    Ukrainian_ge,    Ukrainian_GE,    Ukrainian_ie,     Ukrainian_IE ]};
+    
+    key &lt;BKSL>  {[backslash, bar, Ukrainian_ghe_with_upturn, Ukrainian_GHE_WITH_UPTURN ]};
+
+    include "level3(ralt_switch)"
+};
+EOF
+
+/usr/bin/sudo cp "$FP" "${FP}~"
+/usr/bin/sudo sed -i "/xkb_symbols \"homophonic\" {/,/^}/{
+    /^}/r $TF
+    d
+}" "$FP"
+
+rm "$TF"
+</code></pre>
+
+<br>
+
+<p>
+<a href='https://r2u.org.ua/wiki/keyboard/UkrainianUnicode'>[0]</a> Українська розкладка клавіатури з символами Unicode.
+</p>
+
+</body>
+</html>

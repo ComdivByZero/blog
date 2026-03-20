@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Типы интерфейсов</title>
+
+  <link rel="stylesheet" type="text/css" href="../main.css"/>
+</head>
+
+<body><h2>Типы интерфейсов в разработке</h2>
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh_Xiq5nIg5oTZ7lII44_gZhEn3J0jU6q68VjKQc9UDayJtKdWyyRJyb6n53-WUSE7j1njU4D69TY764cW06Tpf-aq6oPtiEciEjMOydC1ul2BaVplEzoDYi7OG_Cn5r0gnij072NpW7DDJNw1Ehpdyhaviyw2zoPspRD8krG3C1MyvfxtCXMyi3yyy-Tmo/s1024/DALL%C2%B7E%202024-01-29%2017.57.18%20-%20An%20illustration%20divided%20into%20two%20parts%20by%20a%20thin%20line,%20symbolizing%20isolating%20and%20generalizing%20interfaces.%20For%20the%20isolating%20interface,%20show%20a%20pair%20of%20.png" style="display: block; padding: 0 1em; text-align: center; clear: right; float: right;"><img alt="" border="0" width="200" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh_Xiq5nIg5oTZ7lII44_gZhEn3J0jU6q68VjKQc9UDayJtKdWyyRJyb6n53-WUSE7j1njU4D69TY764cW06Tpf-aq6oPtiEciEjMOydC1ul2BaVplEzoDYi7OG_Cn5r0gnij072NpW7DDJNw1Ehpdyhaviyw2zoPspRD8krG3C1MyvfxtCXMyi3yyy-Tmo/s200/DALL%C2%B7E%202024-01-29%2017.57.18%20-%20An%20illustration%20divided%20into%20two%20parts%20by%20a%20thin%20line,%20symbolizing%20isolating%20and%20generalizing%20interfaces.%20For%20the%20isolating%20interface,%20show%20a%20pair%20of%20.png"/></a></div>
+<p>С точки зрения проектирования интерфейсы можно разделить на:</p>
+
+<ol>
+  <li><b>Изолирующий</b>.
+    Скрывает конструктивные особенности кода,
+    но ссылается на конкретное внешне проявлямое поведение.
+    Все утверждения <i>(предикаты)</i>, которые к нему можно предъявить, 
+    должны оставаться неизменными вне
+    зависимости от изменений внутреннего устройства.
+    Когда это не так, говорят, что «абстракции протекают».</li>
+  
+  <li><b>Обобщающий</b>.
+    Представляет стабильную составляющую, как одну из граней кода,
+    благодаря которой к нему можно обращаться единообразно,
+    но не гарантирует полного совпадения поведения для разных кодов.
+    Наоборот, позволяет передавать новые свойства коду, который его использует.
+    Только часть утверждений относительно такого интерфейса остаётся неизменными, 
+    и они составляют его область применимости.
+    </li>
+</ol>
+
+<!--more-->
+
+<p>Пример изолирующего интерфейса — организация постоянного однотипного хранилища объектов без прямой зависимости клиента от нижележащего формата хранения.</p>
+
+<p>Пример обобщающего — создание типизированного хранилища данных, для которого тип задаётся параметризируемо («абстрактно»). Тогда в зависимости от установленного типа данных меняется и тип хранилища, как и его совокупные свойства.</p>
+
+
+<div class="separator" style="clear: both;"><a href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizW0QFxUnfKX1m0ypJUtnnchzbkx7Aq0CGae0ObdseJYJ6lKKiHv4EAIjBtEk8nMrYcvrATv9R-4J4g6i-SKbXhpEJRplIoD3vc5nNxzEveQkqi0nf40W1p6Z_zw4XmSLuYdVlzVpDVakHgMfQQEZin29HpxHNyFY1BKpKOLfjJN8aphe9P_4NhWfUl2Gu/s1024/DALL%C2%B7E%202024-01-29%2017.29.18%20-%20An%20illustration%20contrasting%20a%20frozen%20sea%20and%20a%20stormy%20sea%20to%20symbolize%20static%20and%20dynamic%20interfaces%20in%20software%20development.%20On%20one%20side,%20depict%20a%20fr.png" style="display: block; padding: 0 1em ; text-align: center; clear: right; float: right;"><img alt="" border="0" width="200" data-original-height="1024" data-original-width="1024" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEizW0QFxUnfKX1m0ypJUtnnchzbkx7Aq0CGae0ObdseJYJ6lKKiHv4EAIjBtEk8nMrYcvrATv9R-4J4g6i-SKbXhpEJRplIoD3vc5nNxzEveQkqi0nf40W1p6Z_zw4XmSLuYdVlzVpDVakHgMfQQEZin29HpxHNyFY1BKpKOLfjJN8aphe9P_4NhWfUl2Gu/s200/DALL%C2%B7E%202024-01-29%2017.29.18%20-%20An%20illustration%20contrasting%20a%20frozen%20sea%20and%20a%20stormy%20sea%20to%20symbolize%20static%20and%20dynamic%20interfaces%20in%20software%20development.%20On%20one%20side,%20depict%20a%20fr.png"/></a></div>
+<p> Эта сторона важна, но в популярных языках никак не обозначается.
+  Зато они концетрируются на второстепенной для разработчика стороне интерфейса, так как она важна для самого инструментария:
+</p>
+
+<ol>
+  <li>Статический. Связывание на этапе компиляции. </li>
+  <li>Динамический. Определение конкретного поведения во время исполнения.</li>
+</ol>
+
+</body>
+</html>
